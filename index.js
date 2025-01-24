@@ -8,6 +8,8 @@ const keyPillarRoutes = require('./routes/About/KeyPillarSectionRoutes');
 const teamAdvisorRoutes = require('./routes/About/TeamSectionRoutes');
 const partnerRoutes = require('./routes/About/PartnerSectionRoutes');
 const principleRoutes = require('./routes/About/PrincipleSectionRoutes');
+const practiceCardRoutes = require('./routes/Practice/PracticeMainSectionRoutes');
+const transformationCardRoutes = require('./routes/Practice/TransformationCardRoutes');
 
 const app = express();
 app.use(express.json());
@@ -23,6 +25,8 @@ app.use(`${api}/key-pillar`, keyPillarRoutes);
 app.use(`${api}/team`, teamAdvisorRoutes);
 app.use(`${api}/partner`, partnerRoutes);
 app.use(`${api}/principle`, principleRoutes);
+app.use(`${api}/practice-main`, practiceCardRoutes);
+app.use(`${api}/tansformation-card`, transformationCardRoutes);
 
 mongoose
   .connect(process.env.CONNECTION_STRING)
