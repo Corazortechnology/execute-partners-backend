@@ -1,4 +1,4 @@
-const CareerSubtitle = require("..../models/Career.js");
+const CareerSubtitle = require("../../models/Career/Career");
 
 exports.getSubtitle = async (req, res) => {
   try {
