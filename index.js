@@ -10,6 +10,7 @@ const partnerRoutes = require('./routes/About/PartnerSectionRoutes');
 const principleRoutes = require('./routes/About/PrincipleSectionRoutes');
 const practiceCardRoutes = require('./routes/Practice/PracticeMainSectionRoutes');
 const transformationCardRoutes = require('./routes/Practice/TransformationCardRoutes');
+const careerRoutes = require('./routes/Career/CareerRoutes');
 
 const app = express();
 app.use(express.json());
@@ -17,7 +18,7 @@ app.use(express.json());
 const api = process.env.API_URL;
 
 app.use(cors());
-app.options('*', cors());
+app.options("*", cors());
 
 app.use(`${api}/about`, aboutRoutes);
 app.use(`${api}/leadership`, leadershipRoutes);
@@ -27,6 +28,7 @@ app.use(`${api}/partner`, partnerRoutes);
 app.use(`${api}/principle`, principleRoutes);
 app.use(`${api}/practice-main`, practiceCardRoutes);
 app.use(`${api}/tansformation-card`, transformationCardRoutes);
+app.use(`${api}/career`, careerRoutes);
 
 mongoose
   .connect(process.env.CONNECTION_STRING)
@@ -38,5 +40,5 @@ mongoose
   });
 
 app.listen(5000, () => {
-    console.log("Server is runinng on port http://localhost:5000");
-  });
+  console.log("Server is runinng on port http://localhost:5000");
+});
