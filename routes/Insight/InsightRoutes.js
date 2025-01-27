@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const {
   getInsights,
+  getInsight,
   updateSubheading,
   addCard,
   updateCard,
@@ -10,6 +11,8 @@ const {
 
 // Get all insights data (subheading + cards)
 router.get("/", getInsights);
+
+router.get("/card/:id", getInsight);
 
 // Update the subheading
 router.put("/subheading", updateSubheading);

@@ -16,6 +16,25 @@ exports.getInsights = async (req, res) => {
   }
 };
 
+// Get Insight by ID
+exports.getInsight = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const insight = await Insight.findById(id);
+
+    if (!insight) {
+      return res.status(404).json({ message: "Insight data not found." });
+    }
+
+    res.status(200).json({
+      message: "Insight data retrieved successfully",
+      data: insight,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving Insight data", error });
+  }
+};
+
 // Update the subheading
 exports.updateSubheading = async (req, res) => {
   try {
