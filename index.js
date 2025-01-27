@@ -14,6 +14,7 @@ const greenCardRoutes = require("./routes/Practice/GreenCardRoutes");
 const technologySectionRoutes = require("./routes/Practice/TechnologySectionRoutes");
 const careerRoutes = require("./routes/Career/CareerRoutes");
 const insightRoutes = require("./routes/Insight/InsightRoutes");
+const contactUsRoutes = require("./routes/Contact Us/ContactUsRoutes");
 
 const app = express();
 app.use(express.json());
@@ -35,6 +36,7 @@ app.use(`${api}/green-card`, greenCardRoutes);
 app.use(`${api}/technology-section`, technologySectionRoutes);
 app.use(`${api}/career`, careerRoutes);
 app.use(`${api}/insight`, insightRoutes);
+app.use(`${api}/contactus`, contactUsRoutes);
 
 mongoose
   .connect(process.env.CONNECTION_STRING)
