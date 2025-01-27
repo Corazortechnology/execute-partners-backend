@@ -1,6 +1,6 @@
 const contactUs = require("../../models/Contact Us/ContactUs");
 
-// Get all careers data (subheading + cards)
+// Get all contact data (subheading + cards)
 exports.getContactData = async (req, res) => {
   try {
     const contactData = await contactUs.findOne();
@@ -52,7 +52,7 @@ exports.addCard = async (req, res) => {
 
     res.status(201).json({
       message: "Card added successfully",
-      data: careers.cards[careers.cards.length - 1], // Return the newly added card
+      data: contact.cards[contact.cards.length - 1], // Return the newly added card
     });
   } catch (error) {
     res.status(500).json({ message: "Error adding card", error });
@@ -79,7 +79,7 @@ exports.updateCard = async (req, res) => {
     card.heading = heading || card.heading;
     card.description = description || card.description;
 
-    await careers.save();
+    await contact.save();
 
     res.status(200).json({
       message: "Card updated successfully",
