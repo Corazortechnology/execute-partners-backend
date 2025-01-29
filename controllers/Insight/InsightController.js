@@ -60,11 +60,11 @@ exports.addCard = async (req, res) => {
   try {
     const { heading, description, dateTime, readDuration } = req.body;
     const image = req.file;
-
-    const imageUrl = await azureBlobService.uploadToAzure(
-      image.buffer,
-      image.originalname
-    );
+    console.log(heading, description, dateTime, readDuration)
+    // const imageUrl = await azureBlobService.uploadToAzure(
+    //   image.buffer,
+    //   image.originalname
+    // );
 
     let insights = await Insight.findOne();
     if (!insights) {
@@ -76,7 +76,7 @@ exports.addCard = async (req, res) => {
       description,
       dateTime,
       readDuration,
-      imageUrl,
+      // imageUrl,
     });
 
     await insights.save();
