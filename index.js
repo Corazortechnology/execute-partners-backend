@@ -1,21 +1,23 @@
 const express = require("express");
 const mongoose = require("mongoose");
 require("dotenv/config");
-const cors = require('cors');
-const aboutRoutes = require('./routes/About/AboutHerosectionRoutes')
-const leadershipRoutes = require('./routes/About/LeadershipSectionRoutes');
-const keyPillarRoutes = require('./routes/About/KeyPillarSectionRoutes');
-const teamAdvisorRoutes = require('./routes/About/TeamSectionRoutes');
-const partnerRoutes = require('./routes/About/PartnerSectionRoutes');
-const principleRoutes = require('./routes/About/PrincipleSectionRoutes');
-const practiceCardRoutes = require('./routes/Practice/PracticeMainSectionRoutes');
-const transformationCardRoutes = require('./routes/Practice/TransformationCardRoutes');
-const greenCardRoutes = require('./routes/Practice/GreenCardRoutes')
-const technologySectionRoutes = require('./routes/Practice/TechnologySectionRoutes')
+const cors = require("cors");
+const aboutRoutes = require("./routes/About/AboutHerosectionRoutes");
+const leadershipRoutes = require("./routes/About/LeadershipSectionRoutes");
+const keyPillarRoutes = require("./routes/About/KeyPillarSectionRoutes");
+const teamAdvisorRoutes = require("./routes/About/TeamSectionRoutes");
+const partnerRoutes = require("./routes/About/PartnerSectionRoutes");
+const principleRoutes = require("./routes/About/PrincipleSectionRoutes");
+const practiceCardRoutes = require("./routes/Practice/PracticeMainSectionRoutes");
+const transformationCardRoutes = require("./routes/Practice/TransformationCardRoutes");
+const greenCardRoutes = require("./routes/Practice/GreenCardRoutes");
+const technologySectionRoutes = require("./routes/Practice/TechnologySectionRoutes");
 const yellowCardRoutes = require("./routes/Practice/YellowCardRoutes");
 const complianceSectionRoutes = require("./routes/Practice/ComplianceSectionRoutes");
 const redCardRoutes = require("./routes/Practice/RedCardRoutes");
-const careerRoutes = require('./routes/Career/CareerRoutes');
+const careerRoutes = require("./routes/Career/CareerRoutes");
+const insightRoutes = require("./routes/Insight/InsightRoutes");
+const contactUsRoutes = require("./routes/Contact Us/ContactUsRoutes");
 
 const app = express();
 app.use(express.json());
@@ -39,6 +41,8 @@ app.use(`${api}/yellow-card`, yellowCardRoutes);
 app.use(`${api}/compliance-section`, complianceSectionRoutes);
 app.use(`${api}/red-card`, redCardRoutes);
 app.use(`${api}/career`, careerRoutes);
+app.use(`${api}/insight`, insightRoutes);
+app.use(`${api}/contactus`, contactUsRoutes);
 
 mongoose
   .connect(process.env.CONNECTION_STRING)

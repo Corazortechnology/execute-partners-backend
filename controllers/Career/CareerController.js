@@ -92,30 +92,31 @@ exports.updateCard = async (req, res) => {
 
 // Delete a specific card
 exports.deleteCard = async (req, res) => {
-    try {
-      const { id } = req.params; // Retrieve card ID from params
-  
-      const careers = await Careers.findOne();
-      if (!careers) {
-        return res.status(404).json({ message: "Careers data not found." });
-      }
-  
-      // Find the card by ID and delete it using the `delete` method
-      const cardIndex = careers.cards.findIndex((card) => card._id.toString() === id);
-      if (cardIndex === -1) {
-        return res.status(404).json({ message: "Card not found." });
-      }
-  
-      // Remove the card from the array
-      careers.cards.splice(cardIndex, 1);
-  
-      await careers.save(); // Save the changes to the database
-  
-      res.status(200).json({
-        message: "Card deleted successfully",
-      });
-    } catch (error) {
-      res.status(500).json({ message: "Error deleting card", error });
+  try {
+    const { id } = req.params; // Retrieve card ID from params
+
+    const careers = await Careers.findOne();
+    if (!careers) {
+      return res.status(404).json({ message: "Careers data not found." });
     }
+
+    // Find the card by ID and delete it using the `delete` method
+    const cardIndex = careers.cards.findIndex(
+      (card) => card._id.toString() === id
+    );
+    if (cardIndex === -1) {
+      return res.status(404).json({ message: "Card not found." });
+    }
+
+    // Remove the card from the array
+    careers.cards.splice(cardIndex, 1);
+
+    await careers.save(); // Save the changes to the database
+
+    res.status(200).json({
+      message: "Card deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting card", error });
+  }
 };
-  
