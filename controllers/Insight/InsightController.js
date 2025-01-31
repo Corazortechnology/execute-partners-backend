@@ -1,4 +1,5 @@
 const Insight = require("../../models/Insight/Insight");
+const azureBlobService = require("../../services/azureBlobService");
 
 // Get all insights data (subheading + cards)
 exports.getInsights = async (req, res) => {
@@ -58,6 +59,7 @@ exports.updateSubheading = async (req, res) => {
 // Add a new card
 exports.addCard = async (req, res) => {
   try {
+<<<<<<< HEAD
     const { heading, description, dateTime, readDuration } = req.body;
     const image = req.file;
     console.log(heading, description, dateTime, readDuration)
@@ -65,10 +67,43 @@ exports.addCard = async (req, res) => {
     //   image.buffer,
     //   image.originalname
     // );
+=======
+    console.log("Received request at /addCard");
+
+    if (!req.file) {
+      return res.status(400).json({ message: "Image file is required" });
+    }
+
+    const { heading, description, dateTime, readDuration } = req.body;
+    console.log("Received body:", req.body);
+
+    let imageUrl;
+    try {
+      console.log("Uploading image to Azure...");
+      imageUrl = await azureBlobService.uploadToAzure(
+        req.file.buffer,
+        req.file.originalname
+      );
+      console.log("Image uploaded successfully:", imageUrl);
+    } catch (uploadError) {
+      console.error("Error uploading image to Azure:", uploadError);
+      return res.status(500).json({
+        message: "Error uploading image to Azure",
+        error: uploadError,
+      });
+    }
+
+    if (!imageUrl) {
+      return res
+        .status(500)
+        .json({ message: "Image upload failed, no URL returned." });
+    }
+>>>>>>> e4f7d58f7d9f66a720b1e706241f52e54c5afcfb
 
     let insights = await Insight.findOne();
     if (!insights) {
-      insights = new Insight({ cards: [] }); // Initialize cards array if it doesn't exist
+      console.log("No insights found, creating a new one...");
+      insights = new Insight({ cards: [] });
     }
 
     insights.cards.push({
@@ -79,14 +114,23 @@ exports.addCard = async (req, res) => {
       // imageUrl,
     });
 
-    await insights.save();
+    try {
+      await insights.save();
+      console.log("Card saved successfully!");
+    } catch (saveError) {
+      console.error("Error saving card:", saveError);
+      return res
+        .status(500)
+        .json({ message: "Error saving card to DB", error: saveError });
+    }
 
     res.status(201).json({
       message: "Card added successfully",
-      data: insights.cards[insights.cards.length - 1], // Return the newly added card
+      data: insights.cards[insights.cards.length - 1],
     });
   } catch (error) {
-    res.status(500).json({ message: "Error adding card", error });
+    console.error("Unexpected error:", error);
+    res.status(500).json({ message: "Unexpected error adding card", error });
   }
 };
 
