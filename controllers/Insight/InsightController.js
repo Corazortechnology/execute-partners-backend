@@ -59,7 +59,6 @@ exports.updateSubheading = async (req, res) => {
 // Add a new card
 exports.addCard = async (req, res) => {
   try {
-<<<<<<< HEAD
     const { heading, description, dateTime, readDuration } = req.body;
     const image = req.file;
     console.log(heading, description, dateTime, readDuration)
@@ -67,38 +66,6 @@ exports.addCard = async (req, res) => {
     //   image.buffer,
     //   image.originalname
     // );
-=======
-    console.log("Received request at /addCard");
-
-    if (!req.file) {
-      return res.status(400).json({ message: "Image file is required" });
-    }
-
-    const { heading, description, dateTime, readDuration } = req.body;
-    console.log("Received body:", req.body);
-
-    let imageUrl;
-    try {
-      console.log("Uploading image to Azure...");
-      imageUrl = await azureBlobService.uploadToAzure(
-        req.file.buffer,
-        req.file.originalname
-      );
-      console.log("Image uploaded successfully:", imageUrl);
-    } catch (uploadError) {
-      console.error("Error uploading image to Azure:", uploadError);
-      return res.status(500).json({
-        message: "Error uploading image to Azure",
-        error: uploadError,
-      });
-    }
-
-    if (!imageUrl) {
-      return res
-        .status(500)
-        .json({ message: "Image upload failed, no URL returned." });
-    }
->>>>>>> e4f7d58f7d9f66a720b1e706241f52e54c5afcfb
 
     let insights = await Insight.findOne();
     if (!insights) {
