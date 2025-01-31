@@ -12,6 +12,9 @@ const practiceCardRoutes = require('./routes/Practice/PracticeMainSectionRoutes'
 const transformationCardRoutes = require('./routes/Practice/TransformationCardRoutes');
 const greenCardRoutes = require('./routes/Practice/GreenCardRoutes')
 const technologySectionRoutes = require('./routes/Practice/TechnologySectionRoutes')
+const yellowCardRoutes = require("./routes/Practice/YellowCardRoutes");
+const complianceSectionRoutes = require("./routes/Practice/ComplianceSectionRoutes");
+const redCardRoutes = require("./routes/Practice/RedCardRoutes");
 const careerRoutes = require('./routes/Career/CareerRoutes');
 
 const app = express();
@@ -32,6 +35,9 @@ app.use(`${api}/practice-main`, practiceCardRoutes);
 app.use(`${api}/tansformation-card`, transformationCardRoutes);
 app.use(`${api}/green-card`, greenCardRoutes);
 app.use(`${api}/technology-section`, technologySectionRoutes);
+app.use(`${api}/yellow-card`, yellowCardRoutes);
+app.use(`${api}/compliance-section`, complianceSectionRoutes);
+app.use(`${api}/red-card`, redCardRoutes);
 app.use(`${api}/career`, careerRoutes);
 
 mongoose
