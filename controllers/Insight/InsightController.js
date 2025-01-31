@@ -90,33 +90,40 @@ exports.addCard = async (req, res) => {
   }
 };
 
-// Update a specific card
 exports.updateCard = async (req, res) => {
   try {
-    const { id } = req.params; // Retrieve card ID from params
+    const { id } = req.params; // Get card ID from params
     const { heading, description, dateTime, readDuration } = req.body;
-    const imageUrl = await azureBlobService.uploadToAzure(
-      image.buffer,
-      image.originalname
-    );
 
+    // Handle file upload (Check if an image is provided)
+    let imageUrl = null;
+    if (req.file) {
+      imageUrl = await azureBlobService.uploadToAzure(
+        req.file.buffer, 
+        req.file.originalname
+      );
+    }
+
+    // Find the insights document
     const insights = await Insight.findOne();
     if (!insights) {
       return res.status(404).json({ message: "Insights data not found." });
     }
 
+    // Find the specific card inside the `cards` array
     const card = insights.cards.id(id);
     if (!card) {
       return res.status(404).json({ message: "Card not found." });
     }
 
-    // Update card fields
+    // Update card fields (Only update if a new value is provided)
     card.heading = heading || card.heading;
     card.description = description || card.description;
     card.dateTime = dateTime || card.dateTime;
     card.readDuration = readDuration || card.readDuration;
-    card.imageUrl = imageUrl || card.imageUrl;
+    if (imageUrl) card.imageUrl = imageUrl; // Update image if provided
 
+    // Save the updated document
     await insights.save();
 
     res.status(200).json({
@@ -124,9 +131,11 @@ exports.updateCard = async (req, res) => {
       data: card,
     });
   } catch (error) {
+    console.error("Error updating card:", error);
     res.status(500).json({ message: "Error updating card", error });
   }
 };
+
 
 // Delete a specific card
 exports.deleteCard = async (req, res) => {

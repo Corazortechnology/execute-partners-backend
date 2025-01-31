@@ -1,36 +1,49 @@
-const contactUs = require("../../models/Contact Us/ContactUs");
 
 // Get all contact data (subheading + cards)
+const contactUs = require("../../models/Contact Us/ContactUs");
+
 exports.getContactData = async (req, res) => {
   try {
-    const contactData = await contactUs.findOne();
+    let contactData = await contactUs.findOne();
+
+    // If no data exists, create a default document
     if (!contactData) {
-      return res.status(404).json({ message: "Contact data not found." });
+      contactData = new contactUs({
+        subheading: {
+          infoEmail: "info@example.com",
+          hrEmail: "hr@example.com",
+          officeAddress: "Default Office Address",
+          description: "Default description about the company",
+        },
+        cards: [],
+      });
+
+      await contactData.save();
     }
+
     res.status(200).json({
       message: "Contact data retrieved successfully",
       data: contactData,
     });
   } catch (error) {
+    console.error("Error retrieving contact data:", error);
     res.status(500).json({ message: "Error retrieving contact data", error });
   }
 };
 
-// Update the subheading
+
+// Update the subheading with multiple fields
 exports.updateSubheading = async (req, res) => {
   try {
-    const { subheading } = req.body;
+    const { infoEmail, hrEmail, officeAddress, description } = req.body;
 
     const contact = await contactUs.findOneAndUpdate(
-      {}, // Match the first document
-      { subheading },
-      { new: true, upsert: true } // Create if it doesn't exist
+      {},
+      { subheading: { infoEmail, hrEmail, officeAddress, description } },
+      { new: true, upsert: true }
     );
 
-    res.status(200).json({
-      message: "Subheading updated successfully",
-      data: contact,
-    });
+    res.status(200).json({ message: "Subheading updated successfully", data: contact });
   } catch (error) {
     res.status(500).json({ message: "Error updating subheading", error });
   }

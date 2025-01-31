@@ -7,11 +7,15 @@ const practiceCardSchema = new mongoose.Schema({
 });
 
 // Schema for the entire contact us component
+const subheadding = new mongoose.Schema({
+    infoEmail: { type: String, default: "info@example.com" },
+    hrEmail: { type: String, default: "hr@example.com" },
+    officeAddress: { type: String, default: "5th Floor, Technopolis Knowledge Park, Mahakali Caves Road, Chakala, Andheri - East, Mumbai - 400093." },
+    description: { type: String, default: "We are always happy to hear about your vision and goals." }
+});
+// Schema for the entire contact us component
 const contactUsSchema = new mongoose.Schema({
-  subheading: {
-    type: String,
-    default: "Contact us at example@gmail.com",
-  },
+  subheading: subheadding,
   cards: [practiceCardSchema], // Array of contact us cards
 });
 

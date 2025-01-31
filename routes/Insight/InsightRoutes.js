@@ -21,7 +21,7 @@ router.put("/subheading", updateSubheading);
 router.post("/card", addCard);
 
 // Update a specific card by ID
-router.patch("/card/:id", updateCard);
+router.put("/card/:id", updateCard);
 
 // Delete a specific card by ID
 router.delete("/card/:id", deleteCard);
