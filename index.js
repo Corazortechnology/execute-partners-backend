@@ -15,6 +15,7 @@ const technologySectionRoutes = require("./routes/Practice/TechnologySectionRout
 const careerRoutes = require("./routes/Career/CareerRoutes");
 const insightRoutes = require("./routes/Insight/InsightRoutes");
 const contactUsRoutes = require("./routes/Contact Us/ContactUsRoutes");
+const mailRoutes = require("./routes/Mail/Mail");
 
 const app = express();
 app.use(express.json());
@@ -37,6 +38,7 @@ app.use(`${api}/technology-section`, technologySectionRoutes);
 app.use(`${api}/career`, careerRoutes);
 app.use(`${api}/insight`, insightRoutes);
 app.use(`${api}/contactus`, contactUsRoutes);
+app.use(`${api}/emails`, mailRoutes);
 
 mongoose
   .connect(process.env.CONNECTION_STRING)
