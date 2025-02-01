@@ -16,7 +16,7 @@ exports.sendEmail = async (req, res) => {
     const { email, text } = req.body;
 
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from: email,
       to: process.env.EMAIL_USER,
       email,
       text,
