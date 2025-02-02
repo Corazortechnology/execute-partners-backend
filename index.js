@@ -16,6 +16,9 @@ const careerRoutes = require("./routes/Career/CareerRoutes");
 const insightRoutes = require("./routes/Insight/InsightRoutes");
 const contactUsRoutes = require("./routes/Contact Us/ContactUsRoutes");
 const mailRoutes = require("./routes/Mail/Mail");
+const whyExecute = require("./routes/whyExecute/whyExecuteRoutes");
+const ComplienceSectionRoutes = require("./routes/Practice/compliences&Risk");
+const PractiveHeroSectionRoute = require("./routes/Practice/PracticeHeroSectionRoute");
 
 const app = express();
 app.use(express.json());
@@ -35,10 +38,13 @@ app.use(`${api}/practice-main`, practiceCardRoutes);
 app.use(`${api}/tansformation-card`, transformationCardRoutes);
 app.use(`${api}/green-card`, greenCardRoutes);
 app.use(`${api}/technology-section`, technologySectionRoutes);
+app.use(`${api}/complience&risk-section`, ComplienceSectionRoutes);
+app.use(`${api}/practiceHerosection`, PractiveHeroSectionRoute);
 app.use(`${api}/career`, careerRoutes);
 app.use(`${api}/insight`, insightRoutes);
 app.use(`${api}/contactus`, contactUsRoutes);
 app.use(`${api}/emails`, mailRoutes);
+app.use(`${api}/why-execute`, whyExecute);
 
 mongoose
   .connect(process.env.CONNECTION_STRING)

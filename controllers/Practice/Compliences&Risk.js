@@ -1,14 +1,15 @@
 const TechnologySection = require("../../models/Practice/TechnologySectionModel");
+const CompliencesSection = require("../../models/Practice/compliences&Risk");
 const azureBlobService = require("../../services/azureBlobService");
 
 // Fetch the Technology Section
 exports.getTechnologySection = async (req, res) => {
   try {
-    let section = await TechnologySection.findOne();
+    let section = await CompliencesSection.findOne();
 
     // If no section exists, create a default one
     if (!section) {
-      section = await TechnologySection.create({
+      section = await CompliencesSection.create({
         subheading: "Default Subheading",
         content: {
           title: "Default Title",
@@ -55,7 +56,7 @@ exports.upsertTechnologySection = async (req, res) => {
     }
 
     // Upsert: Create or update the Technology Section
-    const section = await TechnologySection.findOneAndUpdate({}, updateData, { new: true, upsert: true });
+    const section = await CompliencesSection.findOneAndUpdate({}, updateData, { new: true, upsert: true });
 
     res.status(200).json({
       message: "Technology section updated successfully.",
@@ -74,7 +75,7 @@ exports.addCard = async (req, res) => {
   try {
     const { title, descreption } = req.body;
 
-    const section = await TechnologySection.findOne();
+    const section = await CompliencesSection.findOne();
     if (!section) {
       return res.status(404).json({ message: "Technology section not found." });
     }
@@ -97,7 +98,7 @@ exports.updateCard = async (req, res) => {
     const { id } = req.params; // Get card ID from params
     const { title, descreption } = req.body;
 
-    const section = await TechnologySection.findOne();
+    const section = await CompliencesSection.findOne();
     if (!section) {
       return res.status(404).json({ message: "Technology section not found." });
     }
@@ -127,7 +128,7 @@ exports.deleteCard = async (req, res) => {
   try {
     const { id } = req.params; // Get card ID from params
 
-    const section = await TechnologySection.findOne();
+    const section = await CompliencesSection.findOne();
     if (!section) {
       return res.status(404).json({ message: "Technology section not found." });
     }
