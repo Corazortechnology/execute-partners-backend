@@ -40,11 +40,15 @@ exports.upsertTransformationCardModel = async (req, res) => {
     const { subheading } = req.body;
     let content = JSON.parse(req.body.content); // Manually parse the JSON string
 
+    // Find the existing section to retain the previous image URL if no new image is provided
+    const existingSection = await TransformationCardModel.findOne();
+
     let updateData = {
       subheading,
       content: {
         title: content.title,
         descreption: content.descreption,
+        imageUrl: existingSection?.content?.imageUrl, // Default to existing image URL
       },
     };
 
@@ -54,18 +58,19 @@ exports.upsertTransformationCardModel = async (req, res) => {
       updateData.content.imageUrl = imageUrl; // Set the uploaded image URL
     }
 
-    // Upsert: Create or update the Technology Section
+    // Upsert: Create or update the Transformation Card Model
     const section = await TransformationCardModel.findOneAndUpdate({}, updateData, { new: true, upsert: true });
 
     res.status(200).json({
-      message: "Technology section updated successfully.",
+      message: "Transformation Card updated successfully.",
       data: section,
     });
   } catch (error) {
     console.error("Error processing request:", error);
-    res.status(500).json({ message: "Error saving technology section.", error });
+    res.status(500).json({ message: "Error saving Transformation Card.", error });
   }
 };
+
 
 
 

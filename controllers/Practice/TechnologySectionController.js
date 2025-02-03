@@ -40,13 +40,16 @@ exports.upsertTechnologySection = async (req, res) => {
     const { subheading } = req.body;
     let content = JSON.parse(req.body.content); // Manually parse the JSON string
 
+    // Find the existing section to retain the previous image URL if no new image is provided
+    const existingSection = await TechnologySection.findOne();
     let updateData = {
       subheading,
       content: {
         title: content.title,
         descreption: content.descreption,
+        imageUrl: existingSection?.content?.imageUrl, // Default to existing image URL
       },
-    };
+    }; 
 
     // Handle Image Upload to Azure Blob Storage
     if (req.file) {
@@ -66,6 +69,7 @@ exports.upsertTechnologySection = async (req, res) => {
     res.status(500).json({ message: "Error saving technology section.", error });
   }
 };
+
 
 
 

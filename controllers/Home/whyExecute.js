@@ -1,4 +1,4 @@
-const WhyExecute = require("../../models/whyExecute/whyExecute");
+const WhyExecute = require("../../models/Home/whyExecute");
 
 
 // Get the "Why Execute?" data

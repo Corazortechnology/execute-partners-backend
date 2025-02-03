@@ -1,5 +1,5 @@
 const express = require("express");
-const { getWhyExecute, updateHeading, addCard, updateCard, deleteCard } = require("../../controllers/whyExecute/whyExecute");
+const { getWhyExecute, updateHeading, addCard, updateCard, deleteCard } = require("../../controllers/Home/whyExecute");
 const router = express.Router();
 
 // GET: Retrieve the "Why Execute?" data

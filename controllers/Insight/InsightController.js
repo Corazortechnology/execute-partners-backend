@@ -57,15 +57,17 @@ exports.updateSubheading = async (req, res) => {
 };
 
 // Add a new card
-exports.addCard = async (req, res) => {
+exports.addCard = async (req, res) => { 
   try {
     const { heading, description, dateTime, readDuration } = req.body;
-    const image = req.file;
     console.log(heading, description, dateTime, readDuration)
-    // const imageUrl = await azureBlobService.uploadToAzure(
-    //   image.buffer,
-    //   image.originalname
-    // );
+    const image = req.file;
+
+    // Handle image upload if an image is provided
+    let imageUrl = null;
+    if (image) {
+      imageUrl = await azureBlobService.uploadToAzure(image.buffer, image.originalname);
+    }
 
     let insights = await Insight.findOne();
     if (!insights) {
@@ -78,22 +80,14 @@ exports.addCard = async (req, res) => {
       description,
       dateTime,
       readDuration,
-      // imageUrl,
+      imageUrl, // Add image URL only if it exists
     });
 
-    try {
-      await insights.save();
-      console.log("Card saved successfully!");
-    } catch (saveError) {
-      console.error("Error saving card:", saveError);
-      return res
-        .status(500)
-        .json({ message: "Error saving card to DB", error: saveError });
-    }
+    await insights.save();
 
     res.status(201).json({
       message: "Card added successfully",
-      data: insights.cards[insights.cards.length - 1],
+      data: insights.cards[insights.cards.length - 1], // Return the newly added card
     });
   } catch (error) {
     console.error("Unexpected error:", error);
@@ -101,18 +95,16 @@ exports.addCard = async (req, res) => {
   }
 };
 
+
 exports.updateCard = async (req, res) => {
   try {
     const { id } = req.params; // Get card ID from params
     const { heading, description, dateTime, readDuration } = req.body;
-
+    console.log(heading, description, dateTime, readDuration)
     // Handle file upload (Check if an image is provided)
     let imageUrl = null;
     if (req.file) {
-      imageUrl = await azureBlobService.uploadToAzure(
-        req.file.buffer, 
-        req.file.originalname
-      );
+      imageUrl = await azureBlobService.uploadToAzure(req.file.buffer, req.file.originalname);
     }
 
     // Find the insights document
@@ -132,7 +124,11 @@ exports.updateCard = async (req, res) => {
     card.description = description || card.description;
     card.dateTime = dateTime || card.dateTime;
     card.readDuration = readDuration || card.readDuration;
-    if (imageUrl) card.imageUrl = imageUrl; // Update image if provided
+
+    // Update image URL only if a new image is provided
+    if (imageUrl) {
+      card.imageUrl = imageUrl;
+    }
 
     // Save the updated document
     await insights.save();
@@ -146,6 +142,7 @@ exports.updateCard = async (req, res) => {
     res.status(500).json({ message: "Error updating card", error });
   }
 };
+
 
 
 // Delete a specific card
