@@ -16,6 +16,7 @@ const careerRoutes = require("./routes/Career/CareerRoutes");
 const insightRoutes = require("./routes/Insight/InsightRoutes");
 const contactUsRoutes = require("./routes/Contact Us/ContactUsRoutes");
 const mailRoutes = require("./routes/Mail/Mail");
+const CallToPartnerRoute = require("./routes/About/CallToPartnerRoutes");
 
 const app = express();
 app.use(express.json());
@@ -39,6 +40,7 @@ app.use(`${api}/career`, careerRoutes);
 app.use(`${api}/insight`, insightRoutes);
 app.use(`${api}/contactus`, contactUsRoutes);
 app.use(`${api}/emails`, mailRoutes);
+app.use(`${api}/call-to-partner`, CallToPartnerRoute);
 
 mongoose
   .connect(process.env.CONNECTION_STRING)
