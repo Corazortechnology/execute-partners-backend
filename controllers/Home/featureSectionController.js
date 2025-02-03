@@ -95,11 +95,14 @@ exports.deleteCard = async (req, res) => {
             return res.status(404).json({ message: "Feature section not found" });
         }
 
-        section.cards.id(id).remove();
+        // Filter out the card to delete
+        section.cards = section.cards.filter((card) => card._id.toString() !== id);
+
         await section.save();
 
         res.status(200).json({ message: "Card deleted successfully" });
     } catch (error) {
+        console.error("Error deleting card:", error);
         res.status(500).json({ message: "Error deleting card", error });
     }
 };
