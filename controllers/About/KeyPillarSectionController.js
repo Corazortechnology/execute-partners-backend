@@ -1,15 +1,15 @@
-const KeyPillars = require('../../models/About/KeyPillarSectionModel');
+const KeyPillars = require("../../models/About/KeyPillarSectionModel");
 
 // Fetch Key Pillars data
 exports.getKeyPillars = async function (req, res) {
   try {
     const keyPillars = await KeyPillars.findOne({});
     if (!keyPillars) {
-      return res.status(404).send({ error: 'Key Pillars data not found.' });
+      return res.status(404).send({ error: "Key Pillars data not found." });
     }
     res.status(200).send(keyPillars);
   } catch (err) {
-    res.status(500).send({ error: 'Error fetching Key Pillars data.' });
+    res.status(500).send({ error: "Error fetching Key Pillars data." });
   }
 };
 
@@ -20,7 +20,9 @@ exports.upsertKeyPillars = async function (req, res) {
 
     // Validate input
     if (!cards || !Array.isArray(cards) || cards.length === 0) {
-      return res.status(400).send({ error: 'Cards data is required and must be an array.' });
+      return res
+        .status(400)
+        .send({ error: "Cards data is required and must be an array." });
     }
 
     // Update or create the Key Pillars document
@@ -32,7 +34,7 @@ exports.upsertKeyPillars = async function (req, res) {
 
     res.status(200).send(updatedKeyPillars);
   } catch (err) {
-    res.status(500).send({ error: 'Error saving Key Pillars data.' });
+    res.status(500).send({ error: "Error saving Key Pillars data." });
   }
 };
 
@@ -48,7 +50,9 @@ exports.updateKeyPillars = async function (req, res) {
     if (cards) updateData.cards = cards;
 
     if (Object.keys(updateData).length === 0) {
-      return res.status(400).send({ error: 'No valid fields provided for update.' });
+      return res
+        .status(400)
+        .send({ error: "No valid fields provided for update." });
     }
 
     // Find and update the Key Pillars document
@@ -59,11 +63,11 @@ exports.updateKeyPillars = async function (req, res) {
     );
 
     if (!updatedKeyPillars) {
-      return res.status(404).send({ error: 'Key Pillars data not found.' });
+      return res.status(404).send({ error: "Key Pillars data not found." });
     }
 
     res.status(200).send(updatedKeyPillars);
   } catch (err) {
-    res.status(500).send({ error: 'Error updating Key Pillars data.' });
+    res.status(500).send({ error: "Error updating Key Pillars data." });
   }
 };
