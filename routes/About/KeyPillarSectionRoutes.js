@@ -1,15 +1,22 @@
-const express = require('express');
-const keyPillarsController = require('../../controllers/About/KeyPillarSectionController');
-
+const express = require("express");
+const multer = require("multer");
+const { getKeyPillars, updateKeyPillars, addCard, updateCard, deleteCard } = require("../../controllers/About/KeyPillarSectionController");
+const upload = multer(); // Middleware for handling file uploads
 const router = express.Router();
 
-// Route to fetch Key Pillars data
-router.get('/', keyPillarsController.getKeyPillars);
+// Fetch Key Pillars section
+router.get("/", getKeyPillars);
 
-// Route to create or update Key Pillars data (Full Update)
-router.post('/', keyPillarsController.upsertKeyPillars);
+// Update Key Pillars section (Header & Description)
+router.put("/", updateKeyPillars);
 
-// Route to update Key Pillars data (Partial Update)
-router.patch('/', keyPillarsController.updateKeyPillars);
+// Add a new card
+router.post("/card", upload.single("image"),addCard);
+
+// Update an existing card
+router.put("/card/:id", upload.single("image"),updateCard);
+
+// Delete a card
+router.delete("/card/:id",deleteCard);
 
 module.exports = router;

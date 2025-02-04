@@ -35,7 +35,7 @@ app.options("*", cors());
 
 app.use(`${api}/about`, aboutRoutes);
 app.use(`${api}/leadership`, leadershipRoutes);
-app.use(`${api}/key-pillar`, keyPillarRoutes);
+app.use(`${api}/key-pillars`, keyPillarRoutes);
 app.use(`${api}/team`, teamAdvisorRoutes);
 app.use(`${api}/partner`, partnerRoutes);
 app.use(`${api}/principle`, principleRoutes);
