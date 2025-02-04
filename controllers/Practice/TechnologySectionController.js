@@ -4,9 +4,19 @@ const azureBlobService = require("../../services/azureBlobService");
 // Fetch the Technology Section
 exports.getTechnologySection = async (req, res) => {
   try {
-    const section = await TechnologySection.findOne();
+    let section = await TechnologySection.findOne();
+
+    // If no section exists, create a default one
     if (!section) {
-      return res.status(404).json({ message: "Technology section not found." });
+      section = await TechnologySection.create({
+        subheading: "Default Subheading",
+        content: {
+          title: "Default Title",
+          descreption: "Default Description",
+          imageUrl: "",
+        },
+        card: [],
+      });
     }
 
     res.status(200).json({
@@ -18,58 +28,124 @@ exports.getTechnologySection = async (req, res) => {
   }
 };
 
-// Add or Update the Technology Section
+
+
+
+// Add or Update the Subheading and Content with Image Upload
 exports.upsertTechnologySection = async (req, res) => {
   try {
-    const { subheading, content } = req.body;
-    const image = req.file;
 
-    let updateData = { subheading, content };
+    const { subheading } = req.body;
+    let content = JSON.parse(req.body.content); // Manually parse the JSON string
 
-    if (image) {
-      // Upload the new image to Azure Blob Storage
-      const imageUrl = await azureBlobService.uploadToAzure(
-        image.buffer,
-        image.originalname
-      );
+    // Find the existing section to retain the previous image URL if no new image is provided
+    const existingSection = await TechnologySection.findOne();
+    let updateData = {
+      subheading,
+      content: {
+        title: content.title,
+        descreption: content.descreption,
+        imageUrl: existingSection?.content?.imageUrl, // Default to existing image URL
+      },
+    }; 
 
-      // Include the new image URL
-      updateData.imageUrl = imageUrl;
+    // Handle Image Upload to Azure Blob Storage
+    if (req.file) {
+      const imageUrl = await azureBlobService.uploadToAzure(req.file.buffer, req.file.originalname);
+      updateData.content.imageUrl = imageUrl; // Set the uploaded image URL
     }
 
     // Upsert: Create or update the Technology Section
-    const section = await TechnologySection.findOneAndUpdate(
-      {}, // Match the first document
-      updateData,
-      { new: true, upsert: true } // Create if it doesn't exist
-    );
+    const section = await TechnologySection.findOneAndUpdate({}, updateData, { new: true, upsert: true });
 
     res.status(200).json({
       message: "Technology section updated successfully.",
       data: section,
     });
   } catch (error) {
+    console.error("Error processing request:", error);
     res.status(500).json({ message: "Error saving technology section.", error });
   }
 };
 
-// Delete the Technology Section
-exports.deleteTechnologySection = async (req, res) => {
+
+
+
+// Add a New Card
+exports.addCard = async (req, res) => {
   try {
-    const section = await TechnologySection.findOneAndDelete();
+    const { title, descreption } = req.body;
+
+    const section = await TechnologySection.findOne();
     if (!section) {
       return res.status(404).json({ message: "Technology section not found." });
     }
 
-    // Delete the associated image from Azure Blob Storage
-    if (section.imageUrl) {
-      await azureBlobService.deleteFromAzure(section.imageUrl);
-    }
+    section.card.push({ title, descreption }); // Add the new card
+    await section.save();
 
-    res.status(200).json({
-      message: "Technology section deleted successfully.",
+    res.status(201).json({
+      message: "Card added successfully.",
+      data: section.card[section.card.length - 1], // Return the newly added card
     });
   } catch (error) {
-    res.status(500).json({ message: "Error deleting technology section.", error });
+    res.status(500).json({ message: "Error adding card.", error });
+  }
+};
+
+// Update a Specific Card
+exports.updateCard = async (req, res) => {
+  try {
+    const { id } = req.params; // Get card ID from params
+    const { title, descreption } = req.body;
+
+    const section = await TechnologySection.findOne();
+    if (!section) {
+      return res.status(404).json({ message: "Technology section not found." });
+    }
+
+    const card = section.card.id(id); // Find the card by ID
+    if (!card) {
+      return res.status(404).json({ message: "Card not found." });
+    }
+
+    // Update card fields
+    card.title = title || card.title;
+    card.descreption = descreption || card.descreption;
+
+    await section.save();
+
+    res.status(200).json({
+      message: "Card updated successfully.",
+      data: card,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating card.", error });
+  }
+};
+
+// Delete a Specific Card
+exports.deleteCard = async (req, res) => {
+  try {
+    const { id } = req.params; // Get card ID from params
+
+    const section = await TechnologySection.findOne();
+    if (!section) {
+      return res.status(404).json({ message: "Technology section not found." });
+    }
+
+    const cardIndex = section.card.findIndex((card) => card._id.toString() === id);
+    if (cardIndex === -1) {
+      return res.status(404).json({ message: "Card not found." });
+    }
+
+    section.card.splice(cardIndex, 1); // Remove the card
+    await section.save();
+
+    res.status(200).json({
+      message: "Card deleted successfully.",
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting card.", error });
   }
 };

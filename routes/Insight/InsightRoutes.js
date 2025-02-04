@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 // Use memory storage to store file in memory before uploading to Azure
-const storage = multer.memoryStorage();
+const storage = multer.memoryStorage(); // Stores file in memory for further processing
 const upload = multer({ storage });
 const {
   getInsights,
@@ -22,10 +22,10 @@ router.get("/card/:id", getInsight);
 router.put("/subheading", updateSubheading);
 
 // Add a new card
-router.post("/card", upload.single("imageUrl"), addCard);
+router.post("/card", upload.single("image"), addCard);
 
 // Update a specific card by ID
-router.put("/card/:id", updateCard);
+router.put("/card/:id",upload.single("image"), updateCard);
 
 // Delete a specific card by ID
 router.delete("/card/:id", deleteCard);

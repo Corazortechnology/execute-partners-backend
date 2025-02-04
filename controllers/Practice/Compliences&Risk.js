@@ -1,14 +1,15 @@
-const TransformationCardModel = require("../../models/Practice/TransformationCardModel");
+const TechnologySection = require("../../models/Practice/TechnologySectionModel");
+const CompliencesSection = require("../../models/Practice/compliences&Risk");
 const azureBlobService = require("../../services/azureBlobService");
 
 // Fetch the Technology Section
-exports.getTransformationCardModel = async (req, res) => {
+exports.getTechnologySection = async (req, res) => {
   try {
-    let section = await TransformationCardModel.findOne();
+    let section = await CompliencesSection.findOne();
 
     // If no section exists, create a default one
     if (!section) {
-      section = await TransformationCardModel.create({
+      section = await CompliencesSection.create({
         subheading: "Default Subheading",
         content: {
           title: "Default Title",
@@ -20,11 +21,11 @@ exports.getTransformationCardModel = async (req, res) => {
     }
 
     res.status(200).json({
-      message: "Transformation section retrieved successfully.",
+      message: "Technology section retrieved successfully.",
       data: section,
     });
   } catch (error) {
-    res.status(500).json({ message: "Error retrieving Transformation section.", error });
+    res.status(500).json({ message: "Error retrieving technology section.", error });
   }
 };
 
@@ -32,41 +33,41 @@ exports.getTransformationCardModel = async (req, res) => {
 
 
 // Add or Update the Subheading and Content with Image Upload
-exports.upsertTransformationCardModel = async (req, res) => {
+exports.upsertTechnologySection = async (req, res) => {
   try {
-  
+   
 
     const { subheading } = req.body;
-    let content = JSON.parse(req.body.content); // Manually parse the JSON string
+    let content = JSON.parse(req.body.content); // Parse the JSON string manually
 
-    // Find the existing section to retain the previous image URL if no new image is provided
-    const existingSection = await TransformationCardModel.findOne();
+    // Find the existing section to retain the current image URL if no new image is uploaded
+    const existingSection = await CompliencesSection.findOne();
 
     let updateData = {
       subheading,
       content: {
         title: content.title,
         descreption: content.descreption,
-        imageUrl: existingSection?.content?.imageUrl, // Default to existing image URL
+        imageUrl: existingSection?.content?.imageUrl, // Retain the existing image URL
       },
     };
 
-    // Handle Image Upload to Azure Blob Storage
+    // Handle Image Upload to Azure Blob Storage if a new file is provided
     if (req.file) {
       const imageUrl = await azureBlobService.uploadToAzure(req.file.buffer, req.file.originalname);
-      updateData.content.imageUrl = imageUrl; // Set the uploaded image URL
+      updateData.content.imageUrl = imageUrl; // Replace with the new uploaded image URL
     }
 
-    // Upsert: Create or update the Transformation Card Model
-    const section = await TransformationCardModel.findOneAndUpdate({}, updateData, { new: true, upsert: true });
+    // Upsert: Create or update the Technology Section
+    const section = await CompliencesSection.findOneAndUpdate({}, updateData, { new: true, upsert: true });
 
     res.status(200).json({
-      message: "Transformation Card updated successfully.",
+      message: "Technology section updated successfully.",
       data: section,
     });
   } catch (error) {
     console.error("Error processing request:", error);
-    res.status(500).json({ message: "Error saving Transformation Card.", error });
+    res.status(500).json({ message: "Error saving technology section.", error });
   }
 };
 
@@ -78,7 +79,7 @@ exports.addCard = async (req, res) => {
   try {
     const { title, descreption } = req.body;
 
-    const section = await TransformationCardModel.findOne();
+    const section = await CompliencesSection.findOne();
     if (!section) {
       return res.status(404).json({ message: "Technology section not found." });
     }
@@ -101,7 +102,7 @@ exports.updateCard = async (req, res) => {
     const { id } = req.params; // Get card ID from params
     const { title, descreption } = req.body;
 
-    const section = await TransformationCardModel.findOne();
+    const section = await CompliencesSection.findOne();
     if (!section) {
       return res.status(404).json({ message: "Technology section not found." });
     }
@@ -131,7 +132,7 @@ exports.deleteCard = async (req, res) => {
   try {
     const { id } = req.params; // Get card ID from params
 
-    const section = await TransformationCardModel.findOne();
+    const section = await CompliencesSection.findOne();
     if (!section) {
       return res.status(404).json({ message: "Technology section not found." });
     }

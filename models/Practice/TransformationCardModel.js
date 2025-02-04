@@ -1,9 +1,29 @@
 const mongoose = require('mongoose');
 
 const transformationCardSchema = new mongoose.Schema({
-  subheading: { type: String, required: true }, 
-  content: { type: String, required: true },    
-  imageUrl: { type: String, required: true }    
+  subheading: {
+    type: String,
+  },
+  content: {
+    title: {
+      type: String,
+    },
+    descreption: {
+      type: String,
+    },
+    imageUrl: {
+      type: String,
+    },
+  },
+
+  card:[{
+    title: {
+      type: String,
+    },
+    descreption: {
+      type: String,
+    },
+  }]   
 });
 
 module.exports = mongoose.model('TransformationCard', transformationCardSchema);

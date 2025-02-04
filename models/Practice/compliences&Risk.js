@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const technologySectionSchema = new mongoose.Schema({
+const CompliencesSchema = new mongoose.Schema({
   subheading: {
     type: String,
   },
@@ -27,9 +27,9 @@ const technologySectionSchema = new mongoose.Schema({
 
 });
 
-const TechnologySection = mongoose.model(
-  "TechnologySection",
-  technologySectionSchema
+const CompliencesSection = mongoose.model(
+  "CompliencesModel",
+  CompliencesSchema
 );
 
-module.exports = TechnologySection;
+module.exports = CompliencesSection;
