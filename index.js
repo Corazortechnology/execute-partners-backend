@@ -23,6 +23,7 @@ const PractiveHeroSectionRoute = require("./routes/Practice/PracticeHeroSectionR
 const Quote = require("./routes/Practice/quoteRoute");
 const homeQuote = require("./routes/Home/quoteRoute");
 const featureRoutes = require("./routes/Home/featureSectionRoutes");
+const contactQuote = require("./routes/Contact Us/quoteRoute");
 
 const app = express();
 app.use(express.json());
@@ -34,7 +35,7 @@ app.options("*", cors());
 
 app.use(`${api}/about`, aboutRoutes);
 app.use(`${api}/leadership`, leadershipRoutes);
-app.use(`${api}/key-pillar`, keyPillarRoutes);
+app.use(`${api}/key-pillars`, keyPillarRoutes);
 app.use(`${api}/team`, teamAdvisorRoutes);
 app.use(`${api}/partner`, partnerRoutes);
 app.use(`${api}/principle`, principleRoutes);
@@ -46,7 +47,7 @@ app.use(`${api}/complience&risk-section`, ComplienceSectionRoutes);
 app.use(`${api}/practiceHerosection`, PractiveHeroSectionRoute);
 app.use(`${api}/career`, careerRoutes);
 app.use(`${api}/insight`, insightRoutes);
-app.use(`${api}/contactus`, contactUsRoutes);
+app.use(`${api}/contactus`, contactUsRoutes,contactQuote);
 app.use(`${api}/emails`, mailRoutes);
 app.use(`${api}/call-to-partner`, CallToPartnerRoute);
 app.use(`${api}/why-execute`, whyExecute);
