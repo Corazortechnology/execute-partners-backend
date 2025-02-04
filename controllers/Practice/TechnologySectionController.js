@@ -34,8 +34,6 @@ exports.getTechnologySection = async (req, res) => {
 // Add or Update the Subheading and Content with Image Upload
 exports.upsertTechnologySection = async (req, res) => {
   try {
-    console.log("Received request:", req.body); // Debugging log
-    console.log("Received file:", req.file); // Debugging log
 
     const { subheading } = req.body;
     let content = JSON.parse(req.body.content); // Manually parse the JSON string

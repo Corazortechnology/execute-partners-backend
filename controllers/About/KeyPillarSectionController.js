@@ -25,7 +25,6 @@ exports.getKeyPillars = async (req, res) => {
 
 exports.updateKeyPillars = async (req, res) => {
   try {
-    console.log("Updating Key Pillars Header..."); // Debugging log
 
     // Extract data from request
     const { heading, description } = req.body;
@@ -47,7 +46,7 @@ exports.updateKeyPillars = async (req, res) => {
       throw new Error("Failed to update Key Pillars.");
     }
 
-    console.log("Update successful:", updatedKeyPillars);
+   
     res.status(200).json({
       message: "Key Pillars updated successfully",
       data: updatedKeyPillars,
@@ -67,7 +66,7 @@ exports.updateKeyPillars = async (req, res) => {
 exports.addCard = async (req, res) => {
   try {
     const { title, description } = req.body;
-    console.log( "add card")
+  
     // Upload image if provided
     let imageUrl = "";
     if (req.file) {
