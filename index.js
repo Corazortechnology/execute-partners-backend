@@ -12,6 +12,8 @@ const practiceCardRoutes = require("./routes/Practice/PracticeMainSectionRoutes"
 const transformationCardRoutes = require("./routes/Practice/TransformationCardRoutes");
 const greenCardRoutes = require("./routes/Practice/GreenCardRoutes");
 const technologySectionRoutes = require("./routes/Practice/TechnologySectionRoutes");
+const treasuryImplementation = require("./routes/Practice/treasuryImplementation");
+const digitalRoutes = require("./routes/Practice/digitalRoutes");
 const careerRoutes = require("./routes/Career/CareerRoutes");
 const insightRoutes = require("./routes/Insight/InsightRoutes");
 const contactUsRoutes = require("./routes/Contact Us/ContactUsRoutes");
@@ -41,6 +43,8 @@ app.use(`${api}/partner`, partnerRoutes);
 app.use(`${api}/principle`, principleRoutes);
 app.use(`${api}/practice-main`, practiceCardRoutes);
 app.use(`${api}/tansformation-card`, transformationCardRoutes);
+app.use(`${api}/treasuryImplementation-card`, treasuryImplementation);
+app.use(`${api}/digital`, digitalRoutes);
 app.use(`${api}/green-card`, greenCardRoutes);
 app.use(`${api}/technology-section`, technologySectionRoutes);
 app.use(`${api}/complience&risk-section`, ComplienceSectionRoutes);
