@@ -1,6 +1,12 @@
 const express = require("express");
 const multer = require("multer");
-const { getKeyPillars, updateKeyPillars, addCard, updateCard, deleteCard } = require("../../controllers/About/KeyPillarSectionController");
+const {
+  getKeyPillars,
+  updateKeyPillars,
+  addCard,
+  updateCard,
+  deleteCard,
+} = require("../../controllers/About/KeyPillarSectionController");
 const upload = multer(); // Middleware for handling file uploads
 const router = express.Router();
 
@@ -11,12 +17,12 @@ router.get("/", getKeyPillars);
 router.put("/", updateKeyPillars);
 
 // Add a new card
-router.post("/card", upload.single("image"),addCard);
+router.post("/card", upload.single("image"), addCard);
 
 // Update an existing card
-router.put("/card/:id", upload.single("image"),updateCard);
+router.put("/card/:id", upload.single("image"), updateCard);
 
 // Delete a card
-router.delete("/card/:id",deleteCard);
+router.delete("/card/:id", deleteCard);
 
 module.exports = router;

@@ -17,7 +17,9 @@ exports.getKeyPillars = async (req, res) => {
 
     res.status(200).json({ message: "Success", data: keyPillars });
   } catch (err) {
-    res.status(500).json({ message: "Error fetching Key Pillars data.", error: err });
+    res
+      .status(500)
+      .json({ message: "Error fetching Key Pillars data.", error: err });
   }
 };
 
@@ -25,13 +27,14 @@ exports.getKeyPillars = async (req, res) => {
 
 exports.updateKeyPillars = async (req, res) => {
   try {
-
     // Extract data from request
     const { heading, description } = req.body;
 
     // Validate incoming data
     if (!heading || !description) {
-      return res.status(400).json({ message: "Heading and description are required." });
+      return res
+        .status(400)
+        .json({ message: "Heading and description are required." });
     }
 
     // Update or Create (Upsert) the Key Pillars section
@@ -46,12 +49,10 @@ exports.updateKeyPillars = async (req, res) => {
       throw new Error("Failed to update Key Pillars.");
     }
 
-   
     res.status(200).json({
       message: "Key Pillars updated successfully",
       data: updatedKeyPillars,
     });
-
   } catch (err) {
     console.error("Error updating Key Pillars:", err);
     res.status(500).json({
@@ -61,22 +62,28 @@ exports.updateKeyPillars = async (req, res) => {
   }
 };
 
-
 // Add a new card (Create document if none exists)
 exports.addCard = async (req, res) => {
   try {
     const { title, description } = req.body;
-  
+
     // Upload image if provided
     let imageUrl = "";
     if (req.file) {
-      imageUrl = await azureBlobService.uploadToAzure(req.file.buffer, req.file.originalname);
+      imageUrl = await azureBlobService.uploadToAzure(
+        req.file.buffer,
+        req.file.originalname
+      );
     }
 
     // Find or create Key Pillars document
     let keyPillars = await KeyPillars.findOne();
     if (!keyPillars) {
-      keyPillars = await KeyPillars.create({ heading: "Default", description: "Default", cards: [] });
+      keyPillars = await KeyPillars.create({
+        heading: "Default",
+        description: "Default",
+        cards: [],
+      });
     }
 
     // Add new card
@@ -98,13 +105,18 @@ exports.updateCard = async (req, res) => {
 
     let imageUrl = null;
     if (req.file) {
-      imageUrl = await azureBlobService.uploadToAzure(req.file.buffer, req.file.originalname);
+      imageUrl = await azureBlobService.uploadToAzure(
+        req.file.buffer,
+        req.file.originalname
+      );
     }
 
     // Ensure Key Pillars document exists
     let keyPillars = await KeyPillars.findOne();
     if (!keyPillars) {
-      return res.status(404).json({ message: "Key Pillars section not found." });
+      return res
+        .status(404)
+        .json({ message: "Key Pillars section not found." });
     }
 
     // Find the card in the array
@@ -134,11 +146,15 @@ exports.deleteCard = async (req, res) => {
     // Ensure Key Pillars document exists
     let keyPillars = await KeyPillars.findOne();
     if (!keyPillars) {
-      return res.status(404).json({ message: "Key Pillars section not found." });
+      return res
+        .status(404)
+        .json({ message: "Key Pillars section not found." });
     }
 
     // Find index of the card to be removed
-    const cardIndex = keyPillars.cards.findIndex((card) => card._id.toString() === id);
+    const cardIndex = keyPillars.cards.findIndex(
+      (card) => card._id.toString() === id
+    );
     if (cardIndex === -1) {
       return res.status(404).json({ message: "Card not found." });
     }
