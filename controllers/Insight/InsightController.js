@@ -60,7 +60,6 @@ exports.updateSubheading = async (req, res) => {
 exports.addCard = async (req, res) => { 
   try {
     const { heading, description, dateTime, readDuration } = req.body;
-    console.log(heading, description, dateTime, readDuration)
     const image = req.file;
 
     // Handle image upload if an image is provided
@@ -71,7 +70,6 @@ exports.addCard = async (req, res) => {
 
     let insights = await Insight.findOne();
     if (!insights) {
-      console.log("No insights found, creating a new one...");
       insights = new Insight({ cards: [] });
     }
 
@@ -100,7 +98,6 @@ exports.updateCard = async (req, res) => {
   try {
     const { id } = req.params; // Get card ID from params
     const { heading, description, dateTime, readDuration } = req.body;
-    console.log(heading, description, dateTime, readDuration)
     // Handle file upload (Check if an image is provided)
     let imageUrl = null;
     if (req.file) {

@@ -24,6 +24,7 @@ const Quote = require("./routes/Practice/quoteRoute");
 const homeQuote = require("./routes/Home/quoteRoute");
 const featureRoutes = require("./routes/Home/featureSectionRoutes");
 const contactQuote = require("./routes/Contact Us/quoteRoute");
+const PeopleRoute = require("./routes/Practice/peoplRoute");
 
 const app = express();
 app.use(express.json());
@@ -39,6 +40,7 @@ app.use(`${api}/key-pillars`, keyPillarRoutes);
 app.use(`${api}/team`, teamAdvisorRoutes);
 app.use(`${api}/partner`, partnerRoutes);
 app.use(`${api}/principle`, principleRoutes);
+app.use(`${api}/people`, PeopleRoute);
 app.use(`${api}/practice-main`, practiceCardRoutes);
 app.use(`${api}/tansformation-card`, transformationCardRoutes);
 app.use(`${api}/green-card`, greenCardRoutes);
