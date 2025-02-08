@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const cardSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -11,7 +11,7 @@ const cardSchema = new mongoose.Schema({
 const keyPillarsSchema = new mongoose.Schema({
   heading: { type: String, required: true },
   description: { type: String, required: true },
-  cards: [cardSchema]
+  cards: [cardSchema],
 });
 
-module.exports = mongoose.model('KeyPillars', keyPillarsSchema);
+module.exports = mongoose.model("KeyPillars", keyPillarsSchema);
