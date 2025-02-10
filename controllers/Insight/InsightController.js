@@ -57,12 +57,13 @@ exports.updateSubheading = async (req, res) => {
 };
 
 // Add a new card
+// Add a new card
 exports.addCard = async (req, res) => {
   try {
-    const { heading, description, dateTime, readDuration, category, content, references, socialLinks } = req.body;
+    const { heading, description, dateTime, readDuration, category, content, references, socialLinks, headingLinks, descriptionLinks } = req.body;
     const image = req.file;
 
-    console.log("Received Data:", { heading, description, dateTime, readDuration, category, references, socialLinks });
+    console.log("Received Data:", { heading, description, dateTime, readDuration, category, references, socialLinks, headingLinks, descriptionLinks });
 
     // Upload image if provided
     let imageUrl = null;
@@ -77,34 +78,39 @@ exports.addCard = async (req, res) => {
       insights = new Insight({ cards: [] });
     }
 
-    // ✅ Fix: Ensure `references` is always an array
+    // ✅ Parse references (Ensure array format)
     const parsedReferences = references
       ? typeof references === "string"
-        ? JSON.parse(references) // If sent as a JSON string, parse it
-        : Array.isArray(references)
-          ? references.map(link => ({ title: link.title || "", url: link.url || "" }))
-          : []
+        ? JSON.parse(references)
+        : references.map(ref => ({ title: ref.title || "", url: ref.url || "" }))
       : [];
 
-    console.log("Parsed References:", parsedReferences);
-
-    // ✅ Fix: Ensure `socialLinks` is always an array
+    // ✅ Parse social links
     const parsedSocialLinks = socialLinks
       ? typeof socialLinks === "string"
         ? JSON.parse(socialLinks)
-        : Array.isArray(socialLinks)
-          ? socialLinks.map(link => ({ text: link.text || "", url: link.url || "" }))
-          : []
+        : socialLinks.map(link => ({ text: link.text || "", url: link.url || "" }))
       : [];
 
-    console.log("Parsed Social Links:", parsedSocialLinks);
+    // ✅ Parse heading links
+    const parsedHeadingLinks = headingLinks
+      ? typeof headingLinks === "string"
+        ? JSON.parse(headingLinks)
+        : headingLinks.map(link => ({ text: link.text || "", url: link.url || "" }))
+      : [];
 
-    // ✅ Fix: Ensure `content` is always an array
+    // ✅ Parse description links
+    const parsedDescriptionLinks = descriptionLinks
+      ? typeof descriptionLinks === "string"
+        ? JSON.parse(descriptionLinks)
+        : descriptionLinks.map(link => ({ text: link.text || "", url: link.url || "" }))
+      : [];
+     console.log(parsedDescriptionLinks)
+    // ✅ Parse content (Ensure proper structure)
     const parsedContent = content
       ? typeof content === "string"
         ? JSON.parse(content)
-        : Array.isArray(content)
-          ? content.map(item => ({
+        : content.map(item => ({
             type: item.type || "paragraph",
             heading: item.heading || "",
             headingLinks: Array.isArray(item.headingLinks) ? item.headingLinks : [],
@@ -112,31 +118,30 @@ exports.addCard = async (req, res) => {
             descriptionLinks: Array.isArray(item.descriptionLinks) ? item.descriptionLinks : [],
             listItems: Array.isArray(item.listItems)
               ? item.listItems.map(listItem => ({
-                heading: listItem.heading || "",
-                headingLinks: Array.isArray(listItem.headingLinks) ? listItem.headingLinks : [],
-                description: listItem.description || "",
-                descriptionLinks: Array.isArray(listItem.descriptionLinks) ? listItem.descriptionLinks : [],
-                items: Array.isArray(listItem.items) ? listItem.items : [],
-                itemLinks: Array.isArray(listItem.itemLinks) ? listItem.itemLinks : []
-              }))
-              : []
+                  heading: listItem.heading || "",
+                  headingLinks: Array.isArray(listItem.headingLinks) ? listItem.headingLinks : [],
+                  description: listItem.description || "",
+                  descriptionLinks: Array.isArray(listItem.descriptionLinks) ? listItem.descriptionLinks : [],
+                  items: Array.isArray(listItem.items) ? listItem.items : [],
+                  itemLinks: Array.isArray(listItem.itemLinks) ? listItem.itemLinks : [],
+                }))
+              : [],
           }))
-          : []
       : [];
-
-    console.log("Parsed Content:", parsedContent);
 
     // Construct new card object
     const newCard = {
       heading,
+      headingLinks: parsedHeadingLinks,
       description,
+      descriptionLinks: parsedDescriptionLinks,
       dateTime,
       readDuration,
       category: category || "Uncategorized",
       imageUrl,
       references: parsedReferences,
       socialLinks: parsedSocialLinks,
-      content: parsedContent
+      content: parsedContent,
     };
 
     // Add card to insights and save
@@ -154,13 +159,15 @@ exports.addCard = async (req, res) => {
   }
 };
 
+
+// Update a specific card
 // Update a specific card
 exports.updateCard = async (req, res) => {
   try {
     const { id } = req.params;
-    const { heading, description, dateTime, readDuration, category, content, references, socialLinks } = req.body;
+    const { heading, description, dateTime, readDuration, category, content, references, socialLinks, headingLinks, descriptionLinks } = req.body;
     let imageUrl = null;
-    
+
     // ✅ Upload image if provided
     if (req.file) {
       imageUrl = await azureBlobService.uploadToAzure(req.file.buffer, req.file.originalname);
@@ -178,7 +185,7 @@ exports.updateCard = async (req, res) => {
       return res.status(404).json({ message: "Card not found." });
     }
 
-    // ✅ Update basic fields if provided
+    // ✅ Update fields if provided
     if (heading) card.heading = heading;
     if (description) card.description = description;
     if (dateTime) card.dateTime = dateTime;
@@ -186,24 +193,39 @@ exports.updateCard = async (req, res) => {
     if (category) card.category = category;
     if (imageUrl) card.imageUrl = imageUrl;
 
-    // ✅ Process references (Ensure they are an array of { title, url })
+    // ✅ Update references
     if (references) {
-      card.references = Array.isArray(references)
-        ? references.map(ref => ({ title: ref.title || "", url: ref.url || "" }))
-        : JSON.parse(references); // Handle stringified JSON input
+      card.references = typeof references === "string"
+        ? JSON.parse(references)
+        : references.map(ref => ({ title: ref.title || "", url: ref.url || "" }));
     }
 
-    // ✅ Process social links (Ensure they are an array of { text, url })
+    // ✅ Update social links
     if (socialLinks) {
-      card.socialLinks = Array.isArray(socialLinks)
-        ? socialLinks.map(link => ({ text: link.text || "", url: link.url || "" }))
-        : JSON.parse(socialLinks);
+      card.socialLinks = typeof socialLinks === "string"
+        ? JSON.parse(socialLinks)
+        : socialLinks.map(link => ({ text: link.text || "", url: link.url || "" }));
     }
 
-    // ✅ Process content (Ensure valid structure)
+    // ✅ Update heading links
+    if (headingLinks) {
+      card.headingLinks = typeof headingLinks === "string"
+        ? JSON.parse(headingLinks)
+        : headingLinks.map(link => ({ text: link.text || "", url: link.url || "" }));
+    }
+
+    // ✅ Update description links
+    if (descriptionLinks) {
+      card.descriptionLinks = typeof descriptionLinks === "string"
+        ? JSON.parse(descriptionLinks)
+        : descriptionLinks.map(link => ({ text: link.text || "", url: link.url || "" }));
+    }
+
+    // ✅ Update content
     if (content) {
-      card.content = Array.isArray(content)
-        ? content.map(item => ({
+      card.content = typeof content === "string"
+        ? JSON.parse(content)
+        : content.map(item => ({
             type: item.type || "paragraph",
             heading: item.heading || "",
             headingLinks: Array.isArray(item.headingLinks) ? item.headingLinks : [],
@@ -219,8 +241,7 @@ exports.updateCard = async (req, res) => {
                   itemLinks: Array.isArray(listItem.itemLinks) ? listItem.itemLinks : [],
                 }))
               : [],
-          }))
-        : JSON.parse(content);
+          }));
     }
 
     // ✅ Save the updated document
@@ -236,6 +257,7 @@ exports.updateCard = async (req, res) => {
     res.status(500).json({ message: "Error updating card", error });
   }
 };
+
 
 
 // Delete a specific card

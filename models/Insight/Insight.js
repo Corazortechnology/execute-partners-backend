@@ -3,7 +3,9 @@ const mongoose = require("mongoose");
 // Schema for individual insight cards
 const insightCardSchema = new mongoose.Schema({
   heading: { type: String, required: true }, // Insight heading (e.g., "Experts on Contract")
-  description: { type: String, required: true }, // Insight content/description
+  headingLinks:[{text:{type: String},url:{type: String}}],
+  description: { type: String}, // Insight content/description
+  descriptionLinks:[{text:{type: String},url:{type: String}}],
   dateTime: { type: String, required: true },
   readDuration: { type: String },
   imageUrl: { type: String },
