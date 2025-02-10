@@ -21,7 +21,10 @@ exports.getInsights = async (req, res) => {
 exports.getInsight = async (req, res) => {
   const { id } = req.params;
   try {
-    const insight = await Insight.findOne({ "cards._id": id }, { "cards.$": 1 });
+    const insight = await Insight.findOne(
+      { "cards._id": id },
+      { "cards.$": 1 }
+    );
 
     if (!insight) {
       return res.status(404).json({ message: "Insight data not found." });
@@ -69,7 +72,10 @@ exports.addCard = async (req, res) => {
     let imageUrl = null;
     if (image) {
       console.log("Uploading Image:", image.originalname);
-      imageUrl = await azureBlobService.uploadToAzure(image.buffer, image.originalname);
+      imageUrl = await azureBlobService.uploadToAzure(
+        image.buffer,
+        image.originalname
+      );
     }
 
     // Find or create Insights document
@@ -113,9 +119,13 @@ exports.addCard = async (req, res) => {
         : content.map(item => ({
             type: item.type || "paragraph",
             heading: item.heading || "",
-            headingLinks: Array.isArray(item.headingLinks) ? item.headingLinks : [],
+            headingLinks: Array.isArray(item.headingLinks)
+              ? item.headingLinks
+              : [],
             description: item.description || "",
-            descriptionLinks: Array.isArray(item.descriptionLinks) ? item.descriptionLinks : [],
+            descriptionLinks: Array.isArray(item.descriptionLinks)
+              ? item.descriptionLinks
+              : [],
             listItems: Array.isArray(item.listItems)
               ? item.listItems.map(listItem => ({
                   heading: listItem.heading || "",
@@ -152,7 +162,6 @@ exports.addCard = async (req, res) => {
       message: "Card added successfully",
       data: insights.cards[insights.cards.length - 1],
     });
-
   } catch (error) {
     console.error("Error adding card:", error);
     res.status(500).json({ message: "Error adding card", error });
@@ -170,7 +179,10 @@ exports.updateCard = async (req, res) => {
 
     // ✅ Upload image if provided
     if (req.file) {
-      imageUrl = await azureBlobService.uploadToAzure(req.file.buffer, req.file.originalname);
+      imageUrl = await azureBlobService.uploadToAzure(
+        req.file.buffer,
+        req.file.originalname
+      );
     }
 
     // ✅ Find the insight document
@@ -228,17 +240,27 @@ exports.updateCard = async (req, res) => {
         : content.map(item => ({
             type: item.type || "paragraph",
             heading: item.heading || "",
-            headingLinks: Array.isArray(item.headingLinks) ? item.headingLinks : [],
+            headingLinks: Array.isArray(item.headingLinks)
+              ? item.headingLinks
+              : [],
             description: item.description || "",
-            descriptionLinks: Array.isArray(item.descriptionLinks) ? item.descriptionLinks : [],
+            descriptionLinks: Array.isArray(item.descriptionLinks)
+              ? item.descriptionLinks
+              : [],
             listItems: Array.isArray(item.listItems)
-              ? item.listItems.map(listItem => ({
+              ? item.listItems.map((listItem) => ({
                   heading: listItem.heading || "",
-                  headingLinks: Array.isArray(listItem.headingLinks) ? listItem.headingLinks : [],
+                  headingLinks: Array.isArray(listItem.headingLinks)
+                    ? listItem.headingLinks
+                    : [],
                   description: listItem.description || "",
-                  descriptionLinks: Array.isArray(listItem.descriptionLinks) ? listItem.descriptionLinks : [],
+                  descriptionLinks: Array.isArray(listItem.descriptionLinks)
+                    ? listItem.descriptionLinks
+                    : [],
                   items: Array.isArray(listItem.items) ? listItem.items : [],
-                  itemLinks: Array.isArray(listItem.itemLinks) ? listItem.itemLinks : [],
+                  itemLinks: Array.isArray(listItem.itemLinks)
+                    ? listItem.itemLinks
+                    : [],
                 }))
               : [],
           }));
@@ -251,7 +273,6 @@ exports.updateCard = async (req, res) => {
       message: "Card updated successfully",
       data: card,
     });
-
   } catch (error) {
     console.error("Error updating card:", error);
     res.status(500).json({ message: "Error updating card", error });
@@ -270,7 +291,9 @@ exports.deleteCard = async (req, res) => {
       return res.status(404).json({ message: "Insights data not found." });
     }
 
-    const cardIndex = insights.cards.findIndex((card) => card._id.toString() === id);
+    const cardIndex = insights.cards.findIndex(
+      (card) => card._id.toString() === id
+    );
     if (cardIndex === -1) {
       return res.status(404).json({ message: "Card not found." });
     }
@@ -290,7 +313,14 @@ exports.deleteCard = async (req, res) => {
 exports.addContentToCard = async (req, res) => {
   try {
     const { id } = req.params;
-    const { type, heading, description, headingLinks, descriptionLinks, listItems } = req.body;
+    const {
+      type,
+      heading,
+      description,
+      headingLinks,
+      descriptionLinks,
+      listItems,
+    } = req.body;
 
     // console.log("Received Data:", { type, heading, description, headingLinks, descriptionLinks, listItems });
 
@@ -311,11 +341,11 @@ exports.addContentToCard = async (req, res) => {
     let imageUrl = null;
     let videoUrl = null;
 
-    console.log(req.files)
-    console.log(req.file)
+    console.log(req.files);
+    console.log(req.file);
     // Check if image is uploaded
     if (req.files && req.files.image) {
-      console.log(req.files.image)
+      console.log(req.files.image);
       console.log("Uploading Image:", req.files.image[0].originalname);
       imageUrl = await azureBlobService.uploadToAzure(
         req.files.image[0].buffer,
@@ -336,8 +366,8 @@ exports.addContentToCard = async (req, res) => {
     console.log("Uploaded Video URL:", videoUrl);
 
     // Parse heading links
-    const parsedHeadingLinks = headingLinks
-    const parsedDescriptionLinks = descriptionLinks
+    const parsedHeadingLinks = headingLinks;
+    const parsedDescriptionLinks = descriptionLinks;
 
     // Parse list items
     const parsedListItems = listItems?.map((listItem) => ({
@@ -369,22 +399,33 @@ exports.addContentToCard = async (req, res) => {
       message: "Content added successfully",
       data: newContent,
     });
-
   } catch (error) {
     console.error("Error adding content:", error);
     res.status(500).json({ message: "Error adding content", error });
   }
 };
 
-
-
 // Update content inside a specific card
 exports.updateContentInCard = async (req, res) => {
   try {
     const { cardId, contentId } = req.params;
-    const { type, heading, headingLinks, description, descriptionLinks, listItems } = req.body;
+    const {
+      type,
+      heading,
+      headingLinks,
+      description,
+      descriptionLinks,
+      listItems,
+    } = req.body;
 
-    console.log("Received Data:", { type, heading, headingLinks, description, descriptionLinks, listItems });
+    console.log("Received Data:", {
+      type,
+      heading,
+      headingLinks,
+      description,
+      descriptionLinks,
+      listItems,
+    });
 
     // Find Insights
     const insights = await Insight.findOne();
@@ -444,11 +485,17 @@ exports.updateContentInCard = async (req, res) => {
       ? Array.isArray(listItems)
         ? listItems.map((listItem) => ({
             heading: listItem.heading || "",
-            headingLinks: Array.isArray(listItem.headingLinks) ? listItem.headingLinks : [],
+            headingLinks: Array.isArray(listItem.headingLinks)
+              ? listItem.headingLinks
+              : [],
             description: listItem.description || "",
-            descriptionLinks: Array.isArray(listItem.descriptionLinks) ? listItem.descriptionLinks : [],
+            descriptionLinks: Array.isArray(listItem.descriptionLinks)
+              ? listItem.descriptionLinks
+              : [],
             items: Array.isArray(listItem.items) ? listItem.items : [],
-            itemLinks: Array.isArray(listItem.itemLinks) ? listItem.itemLinks : [],
+            itemLinks: Array.isArray(listItem.itemLinks)
+              ? listItem.itemLinks
+              : [],
           }))
         : JSON.parse(listItems)
       : [];
@@ -470,7 +517,6 @@ exports.updateContentInCard = async (req, res) => {
       message: "Content updated successfully",
       data: contentItem,
     });
-
   } catch (error) {
     console.error("Error updating content:", error);
     res.status(500).json({ message: "Error updating content", error });
@@ -492,7 +538,9 @@ exports.deleteContentFromCard = async (req, res) => {
       return res.status(404).json({ message: "Card not found." });
     }
 
-    const contentIndex = card.content.findIndex((c) => c._id.toString() === contentId);
+    const contentIndex = card.content.findIndex(
+      (c) => c._id.toString() === contentId
+    );
     if (contentIndex === -1) {
       return res.status(404).json({ message: "Content item not found." });
     }

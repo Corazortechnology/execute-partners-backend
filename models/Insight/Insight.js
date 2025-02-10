@@ -10,25 +10,11 @@ const insightCardSchema = new mongoose.Schema({
   readDuration: { type: String },
   imageUrl: { type: String },
   category: { type: String },
-  references:[{title:{type: String},url:{type: String}}],
-  socialLinks:[{text:{type: String},url:{type: String}}],
-  content: [{
-    type: { type: String, enum: ["paragraph", "list"], default:"paragraph" }, // Section type
-    heading: { type: String }, // Insight heading (e.g., "Experts on Contract")
-    headingLinks: [
-      {
-        text: { type: String, required: true }, // Link text in the heading
-        url: { type: String, required: true }, // URL in the heading
-      },
-    ],
-    description: { type: String }, // Insight content/description
-    descriptionLinks: [
-      {
-        text: { type: String, required: true }, // Link text in the paragraph
-        url: { type: String, required: true }, // URL in the paragraph
-      },
-    ],
-    listItems: [{
+  references: [{ title: { type: String }, url: { type: String } }],
+  socialLinks: [{ text: { type: String }, url: { type: String } }],
+  content: [
+    {
+      type: { type: String, enum: ["paragraph", "list"], default: "paragraph" }, // Section type
       heading: { type: String }, // Insight heading (e.g., "Experts on Contract")
       headingLinks: [
         {
@@ -36,25 +22,43 @@ const insightCardSchema = new mongoose.Schema({
           url: { type: String, required: true }, // URL in the heading
         },
       ],
-      description: { type: String}, // Insight content/description
+      description: { type: String }, // Insight content/description
       descriptionLinks: [
         {
           text: { type: String, required: true }, // Link text in the paragraph
           url: { type: String, required: true }, // URL in the paragraph
         },
       ],
-      items:[{type: String}],
-      itemLinks: [
+      listItems: [
         {
-          text: { type: String, required: true }, // Link text
-          url: { type: String, required: true }, // Link URL
+          heading: { type: String }, // Insight heading (e.g., "Experts on Contract")
+          headingLinks: [
+            {
+              text: { type: String, required: true }, // Link text in the heading
+              url: { type: String, required: true }, // URL in the heading
+            },
+          ],
+          description: { type: String }, // Insight content/description
+          descriptionLinks: [
+            {
+              text: { type: String, required: true }, // Link text in the paragraph
+              url: { type: String, required: true }, // URL in the paragraph
+            },
+          ],
+          items: [{ type: String }],
+          itemLinks: [
+            {
+              text: { type: String, required: true }, // Link text
+              url: { type: String, required: true }, // Link URL
+            },
+          ], // Array of links for text
         },
-      ], // Array of links for text
-    }], // List of items for bullet points
-    
-    imageUrl: { type: String },
-    videoUrl: { type: String }
-  }]
+      ], // List of items for bullet points
+
+      imageUrl: { type: String },
+      videoUrl: { type: String },
+    },
+  ],
 });
 
 // Schema for the entire Insights component
