@@ -1,3 +1,4 @@
+const User = require("../../models/Auth/User");
 const Insight = require("../../models/Insight/Insight");
 const azureBlobService = require("../../services/azureBlobService");
 
@@ -111,32 +112,32 @@ exports.addCard = async (req, res) => {
         ? JSON.parse(descriptionLinks)
         : descriptionLinks.map(link => ({ text: link.text || "", url: link.url || "" }))
       : [];
-     console.log(parsedDescriptionLinks)
+    console.log(parsedDescriptionLinks)
     // ✅ Parse content (Ensure proper structure)
     const parsedContent = content
       ? typeof content === "string"
         ? JSON.parse(content)
         : content.map(item => ({
-            type: item.type || "paragraph",
-            heading: item.heading || "",
-            headingLinks: Array.isArray(item.headingLinks)
-              ? item.headingLinks
-              : [],
-            description: item.description || "",
-            descriptionLinks: Array.isArray(item.descriptionLinks)
-              ? item.descriptionLinks
-              : [],
-            listItems: Array.isArray(item.listItems)
-              ? item.listItems.map(listItem => ({
-                  heading: listItem.heading || "",
-                  headingLinks: Array.isArray(listItem.headingLinks) ? listItem.headingLinks : [],
-                  description: listItem.description || "",
-                  descriptionLinks: Array.isArray(listItem.descriptionLinks) ? listItem.descriptionLinks : [],
-                  items: Array.isArray(listItem.items) ? listItem.items : [],
-                  itemLinks: Array.isArray(listItem.itemLinks) ? listItem.itemLinks : [],
-                }))
-              : [],
-          }))
+          type: item.type || "paragraph",
+          heading: item.heading || "",
+          headingLinks: Array.isArray(item.headingLinks)
+            ? item.headingLinks
+            : [],
+          description: item.description || "",
+          descriptionLinks: Array.isArray(item.descriptionLinks)
+            ? item.descriptionLinks
+            : [],
+          listItems: Array.isArray(item.listItems)
+            ? item.listItems.map(listItem => ({
+              heading: listItem.heading || "",
+              headingLinks: Array.isArray(listItem.headingLinks) ? listItem.headingLinks : [],
+              description: listItem.description || "",
+              descriptionLinks: Array.isArray(listItem.descriptionLinks) ? listItem.descriptionLinks : [],
+              items: Array.isArray(listItem.items) ? listItem.items : [],
+              itemLinks: Array.isArray(listItem.itemLinks) ? listItem.itemLinks : [],
+            }))
+            : [],
+        }))
       : [];
 
     // Construct new card object
@@ -238,32 +239,32 @@ exports.updateCard = async (req, res) => {
       card.content = typeof content === "string"
         ? JSON.parse(content)
         : content.map(item => ({
-            type: item.type || "paragraph",
-            heading: item.heading || "",
-            headingLinks: Array.isArray(item.headingLinks)
-              ? item.headingLinks
-              : [],
-            description: item.description || "",
-            descriptionLinks: Array.isArray(item.descriptionLinks)
-              ? item.descriptionLinks
-              : [],
-            listItems: Array.isArray(item.listItems)
-              ? item.listItems.map((listItem) => ({
-                  heading: listItem.heading || "",
-                  headingLinks: Array.isArray(listItem.headingLinks)
-                    ? listItem.headingLinks
-                    : [],
-                  description: listItem.description || "",
-                  descriptionLinks: Array.isArray(listItem.descriptionLinks)
-                    ? listItem.descriptionLinks
-                    : [],
-                  items: Array.isArray(listItem.items) ? listItem.items : [],
-                  itemLinks: Array.isArray(listItem.itemLinks)
-                    ? listItem.itemLinks
-                    : [],
-                }))
-              : [],
-          }));
+          type: item.type || "paragraph",
+          heading: item.heading || "",
+          headingLinks: Array.isArray(item.headingLinks)
+            ? item.headingLinks
+            : [],
+          description: item.description || "",
+          descriptionLinks: Array.isArray(item.descriptionLinks)
+            ? item.descriptionLinks
+            : [],
+          listItems: Array.isArray(item.listItems)
+            ? item.listItems.map((listItem) => ({
+              heading: listItem.heading || "",
+              headingLinks: Array.isArray(listItem.headingLinks)
+                ? listItem.headingLinks
+                : [],
+              description: listItem.description || "",
+              descriptionLinks: Array.isArray(listItem.descriptionLinks)
+                ? listItem.descriptionLinks
+                : [],
+              items: Array.isArray(listItem.items) ? listItem.items : [],
+              itemLinks: Array.isArray(listItem.itemLinks)
+                ? listItem.itemLinks
+                : [],
+            }))
+            : [],
+        }));
     }
 
     // ✅ Save the updated document
@@ -484,19 +485,19 @@ exports.updateContentInCard = async (req, res) => {
     const parsedListItems = listItems
       ? Array.isArray(listItems)
         ? listItems.map((listItem) => ({
-            heading: listItem.heading || "",
-            headingLinks: Array.isArray(listItem.headingLinks)
-              ? listItem.headingLinks
-              : [],
-            description: listItem.description || "",
-            descriptionLinks: Array.isArray(listItem.descriptionLinks)
-              ? listItem.descriptionLinks
-              : [],
-            items: Array.isArray(listItem.items) ? listItem.items : [],
-            itemLinks: Array.isArray(listItem.itemLinks)
-              ? listItem.itemLinks
-              : [],
-          }))
+          heading: listItem.heading || "",
+          headingLinks: Array.isArray(listItem.headingLinks)
+            ? listItem.headingLinks
+            : [],
+          description: listItem.description || "",
+          descriptionLinks: Array.isArray(listItem.descriptionLinks)
+            ? listItem.descriptionLinks
+            : [],
+          items: Array.isArray(listItem.items) ? listItem.items : [],
+          itemLinks: Array.isArray(listItem.itemLinks)
+            ? listItem.itemLinks
+            : [],
+        }))
         : JSON.parse(listItems)
       : [];
 
@@ -556,3 +557,4 @@ exports.deleteContentFromCard = async (req, res) => {
     res.status(500).json({ message: "Error removing content", error });
   }
 };
+
