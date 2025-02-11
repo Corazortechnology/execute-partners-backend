@@ -17,6 +17,7 @@ const {
   updateContentInCard,
   deleteContentFromCard,
 } = require("../../controllers/Insight/InsightController");
+const authMiddleware = require("../../middlewares/authMiddleware");
 
 // 📌 **Get all insights (subheading + cards)**
 router.get("/", getInsights);
