@@ -38,7 +38,7 @@ app.use(express.json());
 const api = process.env.API_URL;
 
 app.use(cors());
-app.options("*", cors()); 
+app.options("*", cors());
 
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(session({ secret: "secret", resave: false, saveUninitialized: false }));
