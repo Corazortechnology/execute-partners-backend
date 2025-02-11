@@ -1,28 +1,18 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
+const { getNews, getAllNews, updateSubheading, addCard, updateCard, deleteCard, addContentToCard, updateContentInCard, deleteContentFromCard } = require("../../controllers/News/newsController");
 
 // Use memory storage to store file in memory before uploading to Azure
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-const {
-  getInsights,
-  getInsight,
-  updateSubheading,
-  addCard,
-  updateCard,
-  deleteCard,
-  addContentToCard,
-  updateContentInCard,
-  deleteContentFromCard,
-} = require("../../controllers/Insight/InsightController");
 
 // 📌 **Get all insights (subheading + cards)**
-router.get("/", getInsights);
+router.get("/", getAllNews);
 
 // 📌 **Get a specific card by ID**
-router.get("/card/:id", getInsight);
+router.get("/card/:id", getNews);
 
 // 📌 **Update the subheading**
 router.put("/subheading", updateSubheading);
