@@ -87,7 +87,7 @@ mongoose
   .catch((err) => {
     console.log("Error: ", err);
   });
-
-app.listen(5000, () => {
+const port = process.env.PORT || 5000;
+app.listen(port, () => {
   console.log("Server is runinng on port http://localhost:5000");
 });
