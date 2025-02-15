@@ -32,6 +32,7 @@ const contactQuote = require("./routes/Contact Us/quoteRoute");
 const PeopleRoute = require("./routes/Practice/peoplRoute");
 const authRoutes = require("./routes/Auth/authRoutes");
 const commentRoutes =require("./routes/comment/commentRoutes")
+const pagesVideosRoute = require("./routes/SectionVideo/pageVideoRoutes")
 
 const app = express();
 app.use(express.json());
@@ -72,6 +73,7 @@ app.use(`${api}/call-to-partner`, CallToPartnerRoute);
 app.use(`${api}/why-execute`, whyExecute);
 app.use(`${api}/practice`, Quote);
 app.use(`${api}/home`, homeQuote, featureRoutes);
+app.use(`${api}/section`,pagesVideosRoute);
 
 mongoose
   .connect(process.env.CONNECTION_STRING)
