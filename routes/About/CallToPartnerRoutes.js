@@ -1,5 +1,8 @@
 const express = require("express");
 const callToPartnerController = require("../../controllers/About/CallToPartnerController");
+const {
+  createPartnerRequest,
+} = require("../../controllers/About/partnerController");
 
 const router = express.Router();
 
@@ -16,5 +19,8 @@ router.post("/", callToPartnerController.upsertCallToPartner);
 
 // Route to delete CallToPartner section
 router.delete("/", callToPartnerController.deleteCallToPartner);
+
+//arner request
+router.post("/partner-request", createPartnerRequest);
 
 module.exports = router;
