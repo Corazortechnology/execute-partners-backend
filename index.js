@@ -31,7 +31,7 @@ const featureRoutes = require("./routes/Home/featureSectionRoutes");
 const contactQuote = require("./routes/Contact Us/quoteRoute");
 const PeopleRoute = require("./routes/Practice/peoplRoute");
 const authRoutes = require("./routes/Auth/authRoutes");
-const commentRoutes =require("./routes/comment/commentRoutes")
+const commentRoutes = require("./routes/comment/commentRoutes");
 
 const app = express();
 app.use(express.json());
