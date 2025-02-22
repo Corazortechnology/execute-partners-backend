@@ -2,6 +2,7 @@ const express = require("express");
 const callToPartnerController = require("../../controllers/About/CallToPartnerController");
 const {
   createPartnerRequest,
+  getAllPartnerRequests,
 } = require("../../controllers/About/partnerController");
 
 const router = express.Router();
@@ -22,5 +23,6 @@ router.delete("/", callToPartnerController.deleteCallToPartner);
 
 //arner request
 router.post("/partner-request", createPartnerRequest);
+router.get("/partner-request", getAllPartnerRequests);
 
 module.exports = router;
