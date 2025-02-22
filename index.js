@@ -36,6 +36,7 @@ const PeopleRoute = require("./routes/Practice/peoplRoute");
 const authRoutes = require("./routes/Auth/authRoutes");
 const commentRoutes =require("./routes/comment/commentRoutes")
 const pagesVideosRoute = require("./routes/SectionVideo/pageVideoRoutes")
+const documentRoute = require("./routes/Document/document");
 
 const app = express();
 app.use(express.json());
@@ -80,6 +81,7 @@ app.use(`${api}/why-execute`, whyExecute);
 app.use(`${api}/practice`, Quote);
 app.use(`${api}/home`, homeQuote, featureRoutes);
 app.use(`${api}/section`,pagesVideosRoute);
+app.use(`${api}/document`, documentRoute);
 
 mongoose
   .connect(process.env.CONNECTION_STRING)

@@ -29,6 +29,7 @@ exports.createPartnerRequest = async (req, res) => {
 exports.getAllPartnerRequests = async (req, res) => {
   try {
     const partners = await PartnerRequest.find().sort({ createdAt: -1 });
+    
     res.status(200).json(partners);
   } catch (error) {
     console.error("Error fetching partner requests:", error);

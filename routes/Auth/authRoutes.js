@@ -5,14 +5,17 @@ const {
   signin,
   googleAuth,
   getUserProfile,
+  getAllUserProfile,
 } = require("../../controllers/Auth/authController");
 const authMiddleware = require("../../middlewares/authMiddleware");
+const adminController = require("../../controllers/Auth/adminController");
 
 const router = express.Router();
 
 router.post("/signup", signup);
 router.post("/signin", signin);
 router.get("/profile", authMiddleware, getUserProfile);
+router.get("/AllUsers", getAllUserProfile);
 
 // Google OAuth Routes
 router.get(
@@ -24,5 +27,14 @@ router.get(
   passport.authenticate("google", { failureRedirect: "/login" }),
   googleAuth
 );
+
+// Route to create a new admin
+router.post("/admins", authMiddleware, adminController.createAdmin);
+
+// Route to remove admin privileges
+router.delete("/admins", authMiddleware, adminController.removeAdmin);
+
+// Route to get all admin users
+router.get("/admins", authMiddleware, adminController.getAllAdmins);
 
 module.exports = router;
