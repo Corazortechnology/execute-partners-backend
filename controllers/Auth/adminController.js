@@ -5,7 +5,8 @@ const adminController = {
   createAdmin: async (req, res) => {
     try {
       // Only superAdmin can create admin users
-      if (req.user.role !== "superAdmin") {
+      const admin = await User.findById(req.user.id);
+      if (admin.role !== "superAdmin") {
         return res
           .status(403)
           .json({ error: "Unauthorized. Only superAdmins can create admins." });
@@ -52,7 +53,8 @@ const adminController = {
   removeAdmin: async (req, res) => {
     try {
       // Only superAdmin can remove admin privileges
-      if (req.user.role !== "superAdmin") {
+         const admin = await User.findById(req.user.id);
+      if (admin.role !== "superAdmin") {
         return res
           .status(403)
           .json({ error: "Unauthorized. Only superAdmins can remove admins." });
@@ -96,7 +98,8 @@ const adminController = {
   getAllAdmins: async (req, res) => {
     try {
       // Only superAdmin can view all admin data
-      if (req.user.role !== "superAdmin") {
+      const admin = await User.findById(req.user.id)
+      if (admin.role !== "superAdmin") {
         return res.status(403).json({
           error: "Unauthorized. Only superAdmins can view admin data.",
         });
