@@ -1,17 +1,20 @@
 const User = require("../../models/Auth/User");
+const bcrypt = require("bcryptjs");
 
 const adminController = {
   // Create a new admin with all provided fields (username, email, password, googleId)
   createAdmin: async (req, res) => {
     try {
-      // Only superAdmin can create admin users
-      if (req.user.role !== "superAdmin") {
-        return res
-          .status(403)
-          .json({ error: "Unauthorized. Only superAdmins can create admins." });
+      const users = await User.findById(req.user.id)
+    
+      // Only superAdmin can view all admin data
+      if (users.role !== "superAdmin") {
+        return res.status(403).json({
+          error: "Unauthorized. Only superAdmins can view admin data.",
+        });
       }
 
-      const { username, email, password } = req.body;
+      const { username, email, password,role } = req.body;
 
       // Validate required fields
       if (!email || !password) {
@@ -25,13 +28,13 @@ const adminController = {
       if (user) {
         return res.status(400).json({ error: "User already exists." });
       }
-
+      const hashedPassword = await bcrypt.hash(password, 10);
       // Create a new user with the role of "admin"
       user = new User({
         username,
         email,
-        password,
-        role: "admin",
+        password:hashedPassword,
+        role,
       });
 
       await user.save();
@@ -51,11 +54,13 @@ const adminController = {
   // Demote an admin to a regular user
   removeAdmin: async (req, res) => {
     try {
-      // Only superAdmin can remove admin privileges
-      if (req.user.role !== "superAdmin") {
-        return res
-          .status(403)
-          .json({ error: "Unauthorized. Only superAdmins can remove admins." });
+      const users = await User.findById(req.user.id)
+     
+      // Only superAdmin can view all admin data
+      if (users.role !== "superAdmin") {
+        return res.status(403).json({
+          error: "Unauthorized. Only superAdmins can view admin data.",
+        });
       }
 
       const { email } = req.body;
@@ -95,15 +100,17 @@ const adminController = {
   // Retrieve all admin users with full details
   getAllAdmins: async (req, res) => {
     try {
+      const users = await User.findById(req.user.id)
+     
       // Only superAdmin can view all admin data
-      if (req.user.role !== "superAdmin") {
+      if (users.role !== "superAdmin") {
         return res.status(403).json({
           error: "Unauthorized. Only superAdmins can view admin data.",
         });
       }
 
       // Retrieve all users with the role "admin"
-      const admins = await User.find({ role: "admin" });
+      const admins = await User.find({ role: { $in: ["admin", "superAdmin"] } });
       return res.status(200).json({ admins });
     } catch (error) {
       return res.status(500).json({
