@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 require("dotenv/config");
@@ -34,9 +35,11 @@ const featureRoutes = require("./routes/Home/featureSectionRoutes");
 const contactQuote = require("./routes/Contact Us/quoteRoute");
 const PeopleRoute = require("./routes/Practice/peoplRoute");
 const authRoutes = require("./routes/Auth/authRoutes");
-const commentRoutes =require("./routes/comment/commentRoutes")
-const pagesVideosRoute = require("./routes/SectionVideo/pageVideoRoutes")
+const commentRoutes = require("./routes/comment/commentRoutes");
+const pagesVideosRoute = require("./routes/SectionVideo/pageVideoRoutes");
 const documentRoute = require("./routes/Document/document");
+const fetchAndStoreNewsForAllCategories = require("./services/mediumService");
+const cron = require("node-cron");
 
 const app = express();
 app.use(express.json());
@@ -80,7 +83,7 @@ app.use(`${api}/call-to-partner`, CallToPartnerRoute);
 app.use(`${api}/why-execute`, whyExecute);
 app.use(`${api}/practice`, Quote);
 app.use(`${api}/home`, homeQuote, featureRoutes);
-app.use(`${api}/section`,pagesVideosRoute);
+app.use(`${api}/section`, pagesVideosRoute);
 app.use(`${api}/document`, documentRoute);
 
 mongoose
@@ -91,7 +94,12 @@ mongoose
   .catch((err) => {
     console.log("Error: ", err);
   });
-const port = process.env.PORT || 5000;
-app.listen(port, () => {
+
+// Start the cron job
+cron.schedule("0 */6 * * *", () => {
+  console.log("Fetching and storing news...");
+  fetchAndStoreNewsForAllCategories();
+});
+app.listen(5000, () => {
   console.log("Server is runinng on port http://localhost:5000");
 });
