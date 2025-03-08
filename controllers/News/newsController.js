@@ -64,7 +64,6 @@ exports.addCard = async (req, res) => {
         const { heading, description, dateTime, readDuration, category, content, references, socialLinks, headingLinks, descriptionLinks } = req.body;
         const image = req.file;
 
-        console.log("Received Data:", { heading, description, dateTime, readDuration, category, references, socialLinks, headingLinks, descriptionLinks });
 
         // Upload image if provided
         let imageUrl = null;
@@ -160,6 +159,90 @@ exports.addCard = async (req, res) => {
     }
 };
 
+// Add content to a specific card
+exports.addContentToCard = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { type, heading, description, headingLinks, descriptionLinks, listItems } = req.body;
+
+        // console.log("Received Data:", { type, heading, description, headingLinks, descriptionLinks, listItems });
+
+        // Find the news
+        const news = await News.findOne();
+        if (!news) {
+            return res.status(404).json({ message: "News data not found." });
+        }
+
+        // Find the card by ID
+        const card = news.cards.id(id);
+        if (!card) {
+            return res.status(404).json({ message: "Card not found." });
+        }
+
+        // console.log("Card Found:", card);
+
+        let imageUrl = null;
+        let videoUrl = null;
+
+    
+        // Check if image is uploaded
+        if (req.files && req.files.image) {
+            imageUrl = await azureBlobService.uploadToAzure(
+                req.files.image[0].buffer,
+                req.files.image[0].originalname
+            );
+        }
+
+        // Check if video is uploaded
+        if (req.files && req.files.video) {
+            videoUrl = await azureBlobService.uploadToAzure(
+                req.files.video[0].buffer,
+                req.files.video[0].originalname
+            );
+        }
+
+    
+
+        // Parse heading links
+        const parsedHeadingLinks = headingLinks
+        const parsedDescriptionLinks = descriptionLinks
+
+        // Parse list items
+        const parsedListItems = listItems?.map((listItem) => ({
+            heading: listItem.heading || "",
+            headingLinks: listItem.headingLinks || [],
+            description: listItem.description || "",
+            descriptionLinks: listItem.descriptionLinks || [],
+            items: listItem.items || [],
+            itemLinks: listItem.itemLinks || [],
+        }));
+
+        // Construct new content object
+        const newContent = {
+            type: type || "paragraph",
+            heading,
+            headingLinks: parsedHeadingLinks,
+            description,
+            descriptionLinks: parsedDescriptionLinks,
+            listItems: parsedListItems || [],
+            imageUrl,
+            videoUrl,
+        };
+
+        // Push new content to the card
+        card.content.push(newContent);
+        await news.save();
+
+        res.status(201).json({
+            message: "Content added successfully",
+            data: newContent,
+        });
+
+    } catch (error) {
+        console.error("Error adding content:", error);
+        res.status(500).json({ message: "Error adding content", error });
+    }
+};
 
 // Update a specific card
 // Update a specific card
@@ -259,133 +342,13 @@ exports.updateCard = async (req, res) => {
     }
 };
 
-
-
-// Delete a specific card
-exports.deleteCard = async (req, res) => {
-    try {
-        const { id } = req.params;
-
-        const news = await News.findOne();
-        if (!news) {
-            return res.status(404).json({ message: "News data not found." });
-        }
-
-        const cardIndex = news.cards.findIndex((card) => card._id.toString() === id);
-        if (cardIndex === -1) {
-            return res.status(404).json({ message: "Card not found." });
-        }
-
-        news.cards.splice(cardIndex, 1);
-        await news.save();
-
-        res.status(200).json({
-            message: "Card deleted successfully",
-        });
-    } catch (error) {
-        res.status(500).json({ message: "Error deleting card", error });
-    }
-};
-
-// Add content to a specific card
-exports.addContentToCard = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { type, heading, description, headingLinks, descriptionLinks, listItems } = req.body;
-
-        // console.log("Received Data:", { type, heading, description, headingLinks, descriptionLinks, listItems });
-
-        // Find the news
-        const news = await News.findOne();
-        if (!news) {
-            return res.status(404).json({ message: "News data not found." });
-        }
-
-        // Find the card by ID
-        const card = news.cards.id(id);
-        if (!card) {
-            return res.status(404).json({ message: "Card not found." });
-        }
-
-        // console.log("Card Found:", card);
-
-        let imageUrl = null;
-        let videoUrl = null;
-
-        console.log(req.files)
-        console.log(req.file)
-        // Check if image is uploaded
-        if (req.files && req.files.image) {
-            console.log(req.files.image)
-            console.log("Uploading Image:", req.files.image[0].originalname);
-            imageUrl = await azureBlobService.uploadToAzure(
-                req.files.image[0].buffer,
-                req.files.image[0].originalname
-            );
-        }
-
-        // Check if video is uploaded
-        if (req.files && req.files.video) {
-            console.log("Uploading Video:", req.files.video[0].originalname);
-            videoUrl = await azureBlobService.uploadToAzure(
-                req.files.video[0].buffer,
-                req.files.video[0].originalname
-            );
-        }
-
-        console.log("Uploaded Image URL:", imageUrl);
-        console.log("Uploaded Video URL:", videoUrl);
-
-        // Parse heading links
-        const parsedHeadingLinks = headingLinks
-        const parsedDescriptionLinks = descriptionLinks
-
-        // Parse list items
-        const parsedListItems = listItems?.map((listItem) => ({
-            heading: listItem.heading || "",
-            headingLinks: listItem.headingLinks || [],
-            description: listItem.description || "",
-            descriptionLinks: listItem.descriptionLinks || [],
-            items: listItem.items || [],
-            itemLinks: listItem.itemLinks || [],
-        }));
-
-        // Construct new content object
-        const newContent = {
-            type: type || "paragraph",
-            heading,
-            headingLinks: parsedHeadingLinks,
-            description,
-            descriptionLinks: parsedDescriptionLinks,
-            listItems: parsedListItems || [],
-            imageUrl,
-            videoUrl,
-        };
-
-        // Push new content to the card
-        card.content.push(newContent);
-        await news.save();
-
-        res.status(201).json({
-            message: "Content added successfully",
-            data: newContent,
-        });
-
-    } catch (error) {
-        console.error("Error adding content:", error);
-        res.status(500).json({ message: "Error adding content", error });
-    }
-};
-
-
-
 // Update content inside a specific card
 exports.updateContentInCard = async (req, res) => {
     try {
         const { cardId, contentId } = req.params;
         const { type, heading, headingLinks, description, descriptionLinks, listItems } = req.body;
 
-        console.log("Received Data:", { type, heading, headingLinks, description, descriptionLinks, listItems });
+    
 
         // Find News
         const news = await News.findOne();
@@ -410,7 +373,6 @@ exports.updateContentInCard = async (req, res) => {
 
         // ✅ Upload New Image if Provided
         if (req.files && req.files.image) {
-            console.log("Uploading Image:", req.files.image[0].originalname);
             imageUrl = await azureBlobService.uploadToAzure(
                 req.files.image[0].buffer,
                 req.files.image[0].originalname
@@ -419,7 +381,6 @@ exports.updateContentInCard = async (req, res) => {
 
         // ✅ Upload New Video if Provided
         if (req.files && req.files.video) {
-            console.log("Uploading Video:", req.files.video[0].originalname);
             videoUrl = await azureBlobService.uploadToAzure(
                 req.files.video[0].buffer,
                 req.files.video[0].originalname
@@ -507,5 +468,31 @@ exports.deleteContentFromCard = async (req, res) => {
         });
     } catch (error) {
         res.status(500).json({ message: "Error removing content", error });
+    }
+};
+
+// Delete a specific card
+exports.deleteCard = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const news = await News.findOne();
+        if (!news) {
+            return res.status(404).json({ message: "News data not found." });
+        }
+
+        const cardIndex = news.cards.findIndex((card) => card._id.toString() === id);
+        if (cardIndex === -1) {
+            return res.status(404).json({ message: "Card not found." });
+        }
+
+        news.cards.splice(cardIndex, 1);
+        await news.save();
+
+        res.status(200).json({
+            message: "Card deleted successfully",
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Error deleting card", error });
     }
 };
