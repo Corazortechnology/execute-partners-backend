@@ -63,7 +63,7 @@ const storeNewsInDatabase = async (filteredNews, category) => {
         descriptionLinks: [],
         dateTime: item.published_datetime_utc,
         readDuration: "2 min read", // Default value
-        imageUrl:item.source_logo_url,
+        imageUrl: item.source_logo_url,
         category: category,
         references: [{ title: item.source_name, url: item.source_url }],
         socialLinks: [],
