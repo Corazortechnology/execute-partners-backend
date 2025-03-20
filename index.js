@@ -52,6 +52,11 @@ app.options("*", cors());
 
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(session({ secret: "secret", resave: false, saveUninitialized: false }));
+app.use((req, res, next) => {
+  res.setHeader("Referrer-Policy", "no-referrer-when-downgrade"); // Or another policy based on your needs
+  next();
+});
+
 app.use(passport.initialize());
 app.use(passport.session());
 
