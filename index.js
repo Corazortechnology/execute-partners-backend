@@ -45,6 +45,7 @@ const app = express();
 app.use(express.json());
 
 const api = process.env.API_URL;
+const port = process.env.PORT;
 
 app.use(cors());
 app.options("*", cors());
@@ -100,6 +101,6 @@ cron.schedule("0 */8 * * *", () => {
   console.log("Fetching and storing news...");
   fetchAndStoreNewsForAllCategories();
 });
-app.listen(5000, () => {
-  console.log("Server is runinng on port http://localhost:5000");
+app.listen(port, () => {
+  console.log(`Server is runinng on port ${port}`);
 });
