@@ -51,15 +51,36 @@ app.use(cors());
 app.options("*", cors());
 
 // app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+// app.use((req, res, next) => {
+//   res.header(
+//     "Access-Control-Allow-Origin",
+//     "https://execute-partner.vercel.app/"
+//   ); // Replace with your frontend's origin
+//   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+//   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//   next();
+// });
+
+const allowedOrigins = [
+  "https://execute-partner.vercel.app",
+  "https://execute-partner-admin.vercel.app/",
+];
+
 app.use((req, res, next) => {
-  res.header(
-    "Access-Control-Allow-Origin",
-    "https://execute-partner.vercel.app/"
-  ); // Replace with your frontend's origin
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+  } else {
+    res.header("Access-Control-Allow-Origin", "*"); // You can set "*" if you want to allow all origins
+  }
+
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
   next();
 });
+
 app.use(session({ secret: "secret", resave: false, saveUninitialized: false }));
 
 app.use(passport.initialize());
