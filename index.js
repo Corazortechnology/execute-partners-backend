@@ -51,29 +51,16 @@ app.use(cors());
 app.options("*", cors());
 
 // app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
-const allowedOrigins = [
-  "https://execute-partner.vercel.app/",
-  "https://execute-partner-admin.vercel.app/",
-];
-
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // Check if the incoming origin is in the allowedOrigins list
-      if (allowedOrigins.includes(origin) || !origin) {
-        callback(null, true); // Allow the request
-      } else {
-        callback(new Error("Not allowed by CORS")); // Deny the request
-      }
-    },
-    credentials: true,
-  })
-);
-app.use(session({ secret: "secret", resave: false, saveUninitialized: false }));
 app.use((req, res, next) => {
-  res.setHeader("Referrer-Policy", "no-referrer-when-downgrade"); // Or another policy based on your needs
+  res.header(
+    "Access-Control-Allow-Origin",
+    "https://execute-partner.vercel.app/"
+  ); // Replace with your frontend's origin
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 });
+app.use(session({ secret: "secret", resave: false, saveUninitialized: false }));
 
 app.use(passport.initialize());
 app.use(passport.session());
