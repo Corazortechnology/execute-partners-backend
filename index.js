@@ -63,8 +63,8 @@ app.options("*", cors());
 
 const allowedOrigins = [
   "https://execute-partner.vercel.app",
-  "https://execute-partner-admin.vercel.app/",
-  "https://execute-partners.vercel.app/"
+  "https://execute-partners.vercel.app",
+  "https://execute-partner-admin.vercel.app",
 ];
 
 app.use((req, res, next) => {
