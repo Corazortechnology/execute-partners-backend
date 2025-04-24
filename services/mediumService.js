@@ -2,18 +2,18 @@ require("dotenv").config();
 const News = require("../models/News/news");
 
 const ALLOWED_CATEGORIES = [
-  "business transformation",
-  "technology services",
-  "regulatory compliance & risk",
-  "treasury implementation",
-  "people",
-  "digital",
+  "Business Transformation",
+  "Technology Services",
+  "Regulatory Compliance & Risk",
+  "Treasury Implementations",
+  "People",
+  "Digital",
 ];
 
 // Fetch news from the Real-Time News Data API
 const fetchNews = async (
   query,
-  limit = 3,
+  limit = 2,
   timePublished = "1d",
   lang = "en"
 ) => {
@@ -43,7 +43,24 @@ const filterNewsByCategory = (newsData, category) => {
   return newsData?.filter((news) => {
     const title = news?.title?.toLowerCase();
     const snippet = news?.snippet?.toLowerCase();
-    return title?.includes(category) || snippet?.includes(category);
+    const categoryLower = category.toLowerCase();
+
+    // Special handling for "People" category to filter HR-related news
+    if (categoryLower === "people") {
+      const hrKeywords = [
+        "hr",
+        "human resources",
+        "recruitment",
+        "employee",
+        "workforce",
+      ];
+      return hrKeywords.some(
+        (keyword) => title.includes(keyword) || snippet.includes(keyword)
+      );
+    }
+
+    // General filtering for other categories
+    return title.includes(categoryLower) || snippet.includes(categoryLower);
   });
 };
 
@@ -65,7 +82,7 @@ const storeNewsInDatabase = async (filteredNews, category) => {
         readDuration: "2 min read", // Default value
         imageUrl: item.source_logo_url,
         category: category,
-        references: [{ title: item.source_name, url: item.source_url }],
+        references: [{ title: item.source_name, url: item.link }],
         socialLinks: [],
         content: [
           {
@@ -101,10 +118,34 @@ const storeNewsInDatabase = async (filteredNews, category) => {
 const fetchAndStoreNewsForAllCategories = async () => {
   try {
     for (const category of ALLOWED_CATEGORIES) {
-      const newsData = await fetchNews(category, 3, "1d", "en");
+      const newsData = await fetchNews(category, 2, "1d", "en");
+
       if (newsData.status === "OK" && newsData.data.length > 0) {
-        const filteredNews = filterNewsByCategory(newsData.data, category);
-        await storeNewsInDatabase(filteredNews, category);
+        let filteredNews = newsData.data;
+
+        // Additional filtering for "People" category to include only HR-related news
+        if (category.toLowerCase() === "people") {
+          const hrKeywords = [
+            "hr",
+            "human resources",
+            "recruitment",
+            "employee",
+            "workforce",
+          ];
+          filteredNews = filteredNews.filter((news) => {
+            const title = news.title?.toLowerCase();
+            const snippet = news.snippet?.toLowerCase();
+            return hrKeywords.some(
+              (keyword) => title.includes(keyword) || snippet.includes(keyword)
+            );
+          });
+        }
+
+        if (filteredNews.length > 0) {
+          await storeNewsInDatabase(filteredNews, category);
+        } else {
+          console.log(`No relevant news found for category: ${category}`);
+        }
       }
     }
   } catch (error) {
