@@ -4,19 +4,27 @@ const azureBlobService = require("../../services/azureBlobService");
 // Get all news data (subheading + cards)
 exports.getAllNews = async (req, res) => {
   try {
-    const news = await News.find().sort({ dateTime: -1 }).limit(1);
+    const news = await News.find();
 
-    if (!news) {
-      return res.status(404).json({ message: "News data not found." });
-    }
+
+    // Sort news by dateTime field in descending order for all cards
+    news.forEach((newsItem) => {
+      newsItem.cards.sort(
+        (a, b) => new Date(b.dateTime) - new Date(a.dateTime)
+      );
+    });
+
     res.status(200).json({
-      message: "news data retrieved successfully",
+      message: "News data retrieved successfully",
       data: news,
     });
   } catch (error) {
     res.status(500).json({ message: "Error retrieving news data", error });
   }
 };
+
+
+
 
 // Get a specific news by ID
 exports.getNews = async (req, res) => {
