@@ -122,7 +122,7 @@ const fetchAndStoreNewsForAllCategories = async () => {
 
       if (newsData.status === "OK" && newsData.data.length > 0) {
         let filteredNews = newsData.data;
-
+        
         // Additional filtering for "People" category to include only HR-related news
         if (category.toLowerCase() === "people") {
           const hrKeywords = [
