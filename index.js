@@ -47,8 +47,8 @@ app.use(express.json());
 const api = process.env.API_URL;
 const port = process.env.PORT;
 
-app.use(cors());
-app.options("*", cors());
+// app.use(cors());
+// app.options("*", cors());
 
 // app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 // app.use((req, res, next) => {
@@ -61,27 +61,32 @@ app.options("*", cors());
 //   next();
 // });
 
-const allowedOrigins = [
-  "https://execute-partner.vercel.app",
-  "https://execute-partners.vercel.app",
-  "https://execute-partner-admin.vercel.app",
-  "https://execute-partners-admin.vercel.app",
-];
+// const allowedOrigins = [
+//   "https://execute-partner.vercel.app",
+//   "https://execute-partners.vercel.app",
+//   "https://execute-partner-admin.vercel.app",
+//   "https://execute-partners-admin.vercel.app",
+// ];
 
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
+// app.use((req, res, next) => {
+//   const origin = req.headers.origin;
 
-  if (allowedOrigins.includes(origin)) {
-    res.header("Access-Control-Allow-Origin", origin);
-  } else {
-    res.header("Access-Control-Allow-Origin", "*"); // You can set "*" if you want to allow all origins
-  }
+//   if (allowedOrigins.includes(origin)) {
+//     res.header("Access-Control-Allow-Origin", origin);
+//   } else {
+//     res.header("Access-Control-Allow-Origin", "*"); // You can set "*" if you want to allow all origins
+//   }
 
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+//   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-  next();
-});
+//   next();
+// });
+
+
+app.use(cors());
+app.options("*", cors());
+
 
 app.use(session({ secret: "secret", resave: false, saveUninitialized: false }));
 
