@@ -42,6 +42,15 @@ const fetchAndStoreNewsForAllCategories = require("./services/mediumService");
 const cron = require("node-cron");
 
 const app = express();
+
+app.use(cors({
+  origin: '*',
+  methods: ['GET','HEAD','PUT','PATCH','POST','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization','X-Requested-With'],
+}));
+app.options('*', cors());
+
+
 app.use(express.json());
 
 const api = process.env.API_URL;
@@ -84,8 +93,8 @@ const port = process.env.PORT;
 // });
 
 
-app.use(cors());
-app.options("*", cors());
+// app.use(cors());
+// app.options("*", cors());
 
 
 app.use(session({ secret: "secret", resave: false, saveUninitialized: false }));
