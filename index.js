@@ -144,7 +144,7 @@ mongoose
   });
 
 // Start the cron job
-cron.schedule("0 */8 * * *", () => {
+cron.schedule("0 */1 * * *", () => {
   console.log("Fetching and storing news...");
   fetchAndStoreNewsForAllCategories();
 });
