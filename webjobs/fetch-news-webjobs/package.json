@@ -1,0 +1,7 @@
+{
+  "name": "fetch-news-webjob",
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "mongoose": "^6.0.0"
+  }
+}
