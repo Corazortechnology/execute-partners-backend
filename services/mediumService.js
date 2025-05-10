@@ -19,7 +19,7 @@ const fetchNews = async (
 ) => {
   const url = `https://real-time-news-data.p.rapidapi.com/search?query=${encodeURIComponent(
     query
-  )}&limit=${limit}&time_published=${timePublished}&lang=${lang}`;
+  )}&limit=${limit}&time_published=${timePublished}&lang=${lang}&country=IN`;
   const options = {
     method: "GET",
     headers: {
@@ -251,6 +251,7 @@ const fetchAndStoreNewsForAllCategories = async () => {
 
         // ✅ Step 4: Store filtered news
         if (filteredNews.length > 0) {
+          console.log("Calling store news")
           await storeNewsInDatabase(filteredNews, category);
         } else {
           console.log(`No relevant news found for category: ${category}`);
