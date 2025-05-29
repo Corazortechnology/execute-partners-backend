@@ -39,6 +39,7 @@ const commentRoutes = require("./routes/comment/commentRoutes");
 const pagesVideosRoute = require("./routes/SectionVideo/pageVideoRoutes");
 const documentRoute = require("./routes/Document/document");
 const fetchAndStoreNewsForAllCategories = require("./services/mediumService");
+const articleRoutes = require("./routes/Articles/Articles")
 const cron = require("node-cron");
 
 const app = express();
@@ -133,6 +134,7 @@ app.use(`${api}/practice`, Quote);
 app.use(`${api}/home`, homeQuote, featureRoutes);
 app.use(`${api}/section`, pagesVideosRoute);
 app.use(`${api}/document`, documentRoute);
+app.use(`${api}/articles`, articleRoutes);
 
 mongoose
   .connect(process.env.CONNECTION_STRING)
