@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Article = require("../../models/Articles/Articles");
 const User = require("../../models/Auth/User");
 const azureBlobService = require("../../services/azureBlobService");
+const axios = require("axios");
 
 const VALID_CATEGORIES = [
   "Business Transformation",
@@ -258,7 +259,30 @@ exports.likeArticle = async (req, res) => {
 // Add comment to article
 exports.addComment = async (req, res) => {
   try {
-    const { content } = req.body;
+    const { content } = req.body; // 1. Call the filtercomment API to check if the comment is safe
+    const moderationResponse = await axios.post(
+      "https://mridul2003-aifiltercontent.hf.space/filtercomment",
+      { text: content },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const { safe, identity_hate, toxic, insult } = moderationResponse.data;
+
+    // 2. If not safe, reject the comment
+    if (!safe) {
+      return res.status(403).json({
+        message: "Comment contains abusive or inappropriate content.",
+        details: {
+          identity_hate,
+          toxic,
+          insult,
+        },
+      });
+    }
 
     const comment = {
       user: req.user.id,
@@ -284,6 +308,34 @@ exports.addComment = async (req, res) => {
 // Update comment
 exports.updateComment = async (req, res) => {
   try {
+    const { content } = req.body;
+
+    // 1. Validate content
+    if (!content || typeof content !== "string" || content.trim() === "") {
+      return res.status(400).json({ message: "Comment content is required" });
+    }
+
+    // 2. Check content moderation
+    const moderationResponse = await axios.post(
+      "https://mridul2003-aifiltercontent.hf.space/filtercomment",
+      { text: content },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const { safe, identity_hate, toxic, insult } = moderationResponse.data;
+
+    if (!safe) {
+      return res.status(403).json({
+        message: "Updated comment contains abusive or inappropriate content.",
+        details: { identity_hate, toxic, insult },
+      });
+    }
+
+    // 3. Find the article and the target comment
     const article = await Article.findOne({
       _id: req.params.id,
       "comments._id": req.params.commentId,
@@ -295,20 +347,30 @@ exports.updateComment = async (req, res) => {
 
     const comment = article.comments.id(req.params.commentId);
 
-    // Check ownership
+    // 4. Authorization checks
     if (!comment.user) {
       return res.status(400).json({ message: "Comment user is missing" });
     }
+
     if (!req.user || !req.user.id) {
       return res.status(401).json({ message: "User not authenticated" });
     }
 
     if (comment.user.toString() !== req.user.id.toString()) {
-      return res.status(403).json({ message: "Unauthorized" });
+      return res
+        .status(403)
+        .json({ message: "Unauthorized to update this comment" });
     }
 
-    comment.content = req.body.content;
+    // 5. Update comment
+    comment.content = content;
     comment.updatedAt = Date.now();
+
+    article.comments.forEach((comment) => {
+      if (Array.isArray(comment.replies)) {
+        comment.replies = comment.replies.filter((reply) => reply.user);
+      }
+    });
 
     await article.save();
 
@@ -369,12 +431,39 @@ exports.addReply = async (req, res) => {
   try {
     const { content } = req.body;
 
+    // 1. Validate content
+    if (!content || typeof content !== "string" || content.trim() === "") {
+      return res.status(400).json({ message: "Reply content is required" });
+    }
+
+    // 2. Run moderation check
+    const moderationResponse = await axios.post(
+      "https://mridul2003-aifiltercontent.hf.space/filtercomment",
+      { text: content },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const { safe, identity_hate, toxic, insult } = moderationResponse.data;
+
+    if (!safe) {
+      return res.status(403).json({
+        message: "Reply contains abusive or inappropriate content.",
+        details: { identity_hate, toxic, insult },
+      });
+    }
+
+    // 3. Construct the reply
     const reply = {
       user: req.user._id,
       content,
       likes: [],
     };
 
+    // 4. Save reply to the article
     const article = await Article.findOneAndUpdate(
       {
         _id: req.params.id,
@@ -384,11 +473,21 @@ exports.addReply = async (req, res) => {
       { new: true }
     ).populate("comments.replies.user", "username profile");
 
+    if (!article) {
+      return res.status(404).json({ message: "Article or comment not found" });
+    }
+
+    const updatedComment = article.comments.id(req.params.commentId);
+    const lastReply = updatedComment?.replies?.slice(-1)[0];
+
     res.status(201).json({
       message: "Reply added successfully",
-      data: article.comments.id(req.params.commentId).replies.slice(-1)[0],
+      data: lastReply,
     });
   } catch (error) {
-    res.status(500).json({ message: "Error adding reply", error });
+    console.error("Error adding reply:", error);
+    res
+      .status(500)
+      .json({ message: "Error adding reply", error: error.message });
   }
 };
