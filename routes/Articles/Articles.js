@@ -23,4 +23,10 @@ router.put("/:id/comments/:commentId", articleController.updateComment);
 router.delete("/:id/comments/:commentId", articleController.deleteComment);
 router.post("/:id/comments/:commentId/replies", articleController.addReply);
 
+//Route to join the community 
+router.post("/community/join", articleController.joinGlobalCommunity);
+
+// Route to get the total count of users which joined the community 
+router.get("/community/join-count", articleController.getGlobalCommunityJoinCount);
+
 module.exports = router;

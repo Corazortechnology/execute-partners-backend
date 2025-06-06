@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
-const Article = require("../../models/Articles/Articles");
+const { Article, Community } = require("../../models/Articles/Articles");
 const User = require("../../models/Auth/User");
 const azureBlobService = require("../../services/azureBlobService");
 const axios = require("axios");
+const FormData = require("form-data");
 
 const VALID_CATEGORIES = [
   "Business Transformation",
@@ -81,22 +82,10 @@ exports.getArticleById = async (req, res) => {
 // Create new article
 exports.createArticle = async (req, res) => {
   try {
-    const { title, content, tags, meta, category, userId } = req.body; // include userId from body
+    const { title, content, tags, meta, category, userId } = req.body;
 
-    // Validate userId presence
     if (!userId) {
-      return res
-        .status(400)
-        .json({ message: "User ID is required in request body" });
-    }
-
-    // Handle file uploads
-    let coverImage;
-    if (req.file) {
-      coverImage = await azureBlobService.uploadToAzure(
-        req.file.buffer,
-        req.file.originalname
-      );
+      return res.status(400).json({ message: "User ID is required in request body" });
     }
 
     if (!VALID_CATEGORIES.includes(category)) {
@@ -106,8 +95,70 @@ exports.createArticle = async (req, res) => {
       });
     }
 
-    // Parse content blocks
-    const parsedContent = JSON.parse(content).map((block) => ({
+    let parsedContent = [];
+    let parsedTags = [];
+    let parsedMeta = {};
+
+    try {
+      parsedContent = JSON.parse(content);
+      parsedTags = JSON.parse(tags);
+      parsedMeta = JSON.parse(meta);
+    } catch (err) {
+      return res.status(400).json({ message: "Invalid JSON in content, tags, or meta" });
+    }
+
+    const contentText = parsedContent.map((block) => block.text || "").join(" ");
+    const combinedText = [title, contentText, parsedMeta?.description || "", parsedTags.join(" ")].join(" ");
+
+    // Prepare text moderation
+    const textForm = new FormData();
+    textForm.append("text", combinedText);
+
+    // Prepare image moderation
+    let imageModerationResult = null;
+    const imageForm = new FormData();
+    if (req.file) {
+      imageForm.append("image_file", req.file.buffer, req.file.originalname);
+    }
+
+    let textModerationResult;
+
+    try {
+      [textModerationResult, imageModerationResult] = await Promise.all([
+        axios.post("https://mridul2003-aifiltercontent.hf.space/filtercomment", textForm, {
+          headers: textForm.getHeaders(),
+        }),
+        req.file
+          ? axios.post("https://mridul2003-aifiltercontent.hf.space/filtercomment", imageForm, {
+              headers: imageForm.getHeaders(),
+            })
+          : [null],
+      ]);
+    } catch (modError) {
+      console.error("Moderation API Error:", modError?.response?.data || modError.message);
+      return res.status(500).json({
+        message: "Moderation API failed",
+        details: modError?.response?.data || {},
+      });
+    }
+
+    const textSafe = textModerationResult?.data?.safe ?? true;
+    const imageSafe = imageModerationResult?.data?.safe ?? true;
+
+    if (!textSafe) {
+      return res.status(403).json({
+        message: "Article contains inappropriate or unsafe text content",
+        details: textModerationResult.data,
+      });
+    }
+
+    // Upload image to Azure
+    let coverImage = null;
+    if (req.file) {
+      coverImage = await azureBlobService.uploadToAzure(req.file.buffer, req.file.originalname);
+    }
+
+    const structuredContent = parsedContent.map((block) => ({
       ...block,
       order: parseInt(block.order),
     }));
@@ -115,23 +166,35 @@ exports.createArticle = async (req, res) => {
     const newArticle = new Article({
       title,
       category,
-      author: userId, // use userId from body here
-      content: parsedContent,
-      tags: JSON.parse(tags),
+      author: userId,
+      content: structuredContent,
+      tags: parsedTags,
       coverImage,
-      meta: JSON.parse(meta),
-      slug: generateSlug(title), // Make sure this function exists
+      meta: parsedMeta,
+      slug: generateSlug(title),
       publishedAt: Date.now(),
     });
 
     await newArticle.save();
 
-    // Add article to user's articles
     await User.findByIdAndUpdate(userId, {
       $push: { articles: newArticle._id },
     });
 
-    res.status(201).json({
+    // 🔥 If image is unsafe, return blurred version and message
+    if (!imageSafe) {
+      const moderationData = imageModerationResult?.data || {};
+
+      return res.status(201).json({
+        message: "Image rejected due to policy violation.",
+        alert_message: moderationData.alert_message || "Image content flagged",
+        blurred_image_base64: moderationData.blurred_image_base64 || null,
+        data: newArticle,
+      });
+    }
+
+    // ✅ Normal success response
+    return res.status(201).json({
       message: "Article created successfully",
       data: newArticle,
     });
@@ -260,15 +323,37 @@ exports.likeArticle = async (req, res) => {
 exports.addComment = async (req, res) => {
   try {
     const { content } = req.body; // 1. Call the filtercomment API to check if the comment is safe
-    const moderationResponse = await axios.post(
-      "https://mridul2003-aifiltercontent.hf.space/filtercomment",
-      { text: content },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
+    const form = new FormData();
+    form.append("text", content); // this is the field expected by the moderation API
+
+    // ✅ 2. Call moderation API with multipart headers
+    let moderationResponse;
+    try {
+      moderationResponse = await axios.post(
+        "https://mridul2003-aifiltercontent.hf.space/filtercomment",
+        form,
+        {
+          headers: form.getHeaders(),
+        }
+      );
+    } catch (modError) {
+      if (modError.response && modError.response.status === 400) {
+        const raw = modError.response.data;
+
+        return res.status(403).json({
+          message:
+            raw?.message ||
+            "Your content is toxic or inappropriate. We can't add your comment.",
+          details: raw || {},
+        });
       }
-    );
+
+      console.error("Moderation API Error:", modError);
+      return res.status(500).json({
+        message: "Moderation check failed due to a server error.",
+        error: modError.message || modError.toString(),
+      });
+    }
 
     const { safe, identity_hate, toxic, insult } = moderationResponse.data;
 
@@ -315,16 +400,37 @@ exports.updateComment = async (req, res) => {
       return res.status(400).json({ message: "Comment content is required" });
     }
 
-    // 2. Check content moderation
-    const moderationResponse = await axios.post(
-      "https://mridul2003-aifiltercontent.hf.space/filtercomment",
-      { text: content },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
+    const form = new FormData();
+    form.append("text", content); // this is the field expected by the moderation API
+
+    // ✅ 2. Call moderation API with multipart headers
+    let moderationResponse;
+    try {
+      moderationResponse = await axios.post(
+        "https://mridul2003-aifiltercontent.hf.space/filtercomment",
+        form,
+        {
+          headers: form.getHeaders(),
+        }
+      );
+    } catch (modError) {
+      if (modError.response && modError.response.status === 400) {
+        const raw = modError.response.data;
+
+        return res.status(403).json({
+          message:
+            raw?.message ||
+            "Your content is toxic or inappropriate. We can't add your comment.",
+          details: raw || {},
+        });
       }
-    );
+
+      console.error("Moderation API Error:", modError);
+      return res.status(500).json({
+        message: "Moderation check failed due to a server error.",
+        error: modError.message || modError.toString(),
+      });
+    }
 
     const { safe, identity_hate, toxic, insult } = moderationResponse.data;
 
@@ -437,15 +543,37 @@ exports.addReply = async (req, res) => {
     }
 
     // 2. Run moderation check
-    const moderationResponse = await axios.post(
-      "https://mridul2003-aifiltercontent.hf.space/filtercomment",
-      { text: content },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
+    const form = new FormData();
+    form.append("text", content); // this is the field expected by the moderation API
+
+    // ✅ 2. Call moderation API with multipart headers
+    let moderationResponse;
+    try {
+      moderationResponse = await axios.post(
+        "https://mridul2003-aifiltercontent.hf.space/filtercomment",
+        form,
+        {
+          headers: form.getHeaders(),
+        }
+      );
+    } catch (modError) {
+      if (modError.response && modError.response.status === 400) {
+        const raw = modError.response.data;
+
+        return res.status(403).json({
+          message:
+            raw?.message ||
+            "Your content is toxic or inappropriate. We can't add your comment.",
+          details: raw || {},
+        });
       }
-    );
+
+      console.error("Moderation API Error:", modError);
+      return res.status(500).json({
+        message: "Moderation check failed due to a server error.",
+        error: modError.message || modError.toString(),
+      });
+    }
 
     const { safe, identity_hate, toxic, insult } = moderationResponse.data;
 
@@ -489,5 +617,43 @@ exports.addReply = async (req, res) => {
     res
       .status(500)
       .json({ message: "Error adding reply", error: error.message });
+  }
+};
+
+// To join the community
+exports.joinGlobalCommunity = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    let community = await Community.findOne();
+
+    if (!community) {
+      community = new Community({ name: "Execute Community" });
+    }
+
+    if (community.joinedUsers.includes(userId)) {
+      return res
+        .status(400)
+        .json({ message: "You have already joined the community" });
+    }
+
+    community.joinedUsers.push(userId);
+    await community.save();
+
+    res.status(200).json({ message: "Joined Community Successfully" });
+  } catch (error) {
+    console.error("Error joining community: ", error);
+    res.status(500).json({ message: "Internal server error", error });
+  }
+};
+
+// To get the total joined user for community
+exports.getGlobalCommunityJoinCount = async (req, res) => {
+  try {
+    const community = await Community.findOne().select("joinedUsers");
+    const count = community?.joinedUsers?.length || 0;
+    res.status(200).json({ count });
+  } catch (error) {
+    console.error("Error fetching community count: ", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
