@@ -106,4 +106,18 @@ const articleSchema = new mongoose.Schema({
 
 const Article = mongoose.model("Article", articleSchema);
 
-module.exports = Article;
+const communitySchema = new mongoose.Schema({
+  name: {
+    type: String,
+    default: "Execute Community"
+  },
+  description: String,
+  joinedUsers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+  }]
+}, { timestamps: true});
+
+const Community = mongoose.model("Community", communitySchema)
+
+module.exports = {Article, Community} ;

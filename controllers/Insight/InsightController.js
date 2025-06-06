@@ -61,7 +61,6 @@ exports.updateSubheading = async (req, res) => {
 };
 
 // Add a new card
-// Add a new card
 exports.addCard = async (req, res) => {
   try {
     const { heading, description, dateTime, readDuration, category, content, references, socialLinks, headingLinks, descriptionLinks } = req.body;
@@ -168,7 +167,6 @@ exports.addCard = async (req, res) => {
     res.status(500).json({ message: "Error adding card", error });
   }
 };
-
 
 // Update a specific card
 // Update a specific card
