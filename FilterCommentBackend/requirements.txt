@@ -1,0 +1,8 @@
+flask
+fastapi
+uvicorn
+transformers
+torch
+Pillow
+langchain-google-genai
+python-dotenv
