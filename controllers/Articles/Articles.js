@@ -85,7 +85,9 @@ exports.createArticle = async (req, res) => {
     const { title, content, tags, meta, category, userId } = req.body;
 
     if (!userId) {
-      return res.status(400).json({ message: "User ID is required in request body" });
+      return res
+        .status(400)
+        .json({ message: "User ID is required in request body" });
     }
 
     if (!VALID_CATEGORIES.includes(category)) {
@@ -104,38 +106,60 @@ exports.createArticle = async (req, res) => {
       parsedTags = JSON.parse(tags);
       parsedMeta = JSON.parse(meta);
     } catch (err) {
-      return res.status(400).json({ message: "Invalid JSON in content, tags, or meta" });
+      return res
+        .status(400)
+        .json({ message: "Invalid JSON in content, tags, or meta" });
     }
 
-    const contentText = parsedContent.map((block) => block.text || "").join(" ");
-    const combinedText = [title, contentText, parsedMeta?.description || "", parsedTags.join(" ")].join(" ");
+    const contentText = parsedContent
+      .map((block) => block.text || "")
+      .join(" ");
+    const combinedText = [
+      title,
+      contentText,
+      parsedMeta?.description || "",
+      parsedTags.join(" "),
+    ].join(" ");
 
     // Prepare text moderation
     const textForm = new FormData();
     textForm.append("text", combinedText);
+    textForm.append("article", "true");
 
     // Prepare image moderation
     let imageModerationResult = null;
     const imageForm = new FormData();
     if (req.file) {
       imageForm.append("image_file", req.file.buffer, req.file.originalname);
+      imageForm.append("article", "true");
     }
 
     let textModerationResult;
 
     try {
       [textModerationResult, imageModerationResult] = await Promise.all([
-        axios.post("https://mridul2003-aifiltercontent.hf.space/filtercomment", textForm, {
-          headers: textForm.getHeaders(),
-        }),
+        axios.post(
+          "https://execute-partners-backend-2.onrender.com/filtercomment",
+          textForm,
+          {
+            headers: textForm.getHeaders(),
+          }
+        ),
         req.file
-          ? axios.post("https://mridul2003-aifiltercontent.hf.space/filtercomment", imageForm, {
-              headers: imageForm.getHeaders(),
-            })
+          ? axios.post(
+              "https://execute-partners-backend-2.onrender.com/filtercomment",
+              imageForm,
+              {
+                headers: imageForm.getHeaders(),
+              }
+            )
           : [null],
       ]);
     } catch (modError) {
-      console.error("Moderation API Error:", modError?.response?.data || modError.message);
+      console.error(
+        "Moderation API Error:",
+        modError?.response?.data || modError.message
+      );
       return res.status(500).json({
         message: "Moderation API failed",
         details: modError?.response?.data || {},
@@ -153,9 +177,26 @@ exports.createArticle = async (req, res) => {
     }
 
     // Upload image to Azure
+    // let coverImage = null;
+    // if (req.file) {
+    //   coverImage = await azureBlobService.uploadToAzure(req.file.buffer, req.file.originalname);
+    // }
+
+    // Assuming the blurred image URL and original image URL are stored in the database
     let coverImage = null;
+    let originalImage = null;
+
     if (req.file) {
-      coverImage = await azureBlobService.uploadToAzure(req.file.buffer, req.file.originalname);
+      // If the image is safe, upload the original image to Cloudinary
+      if (imageSafe) {
+        coverImage = req.file.path; // Safe image, store it as cover image
+        originalImage = req.file.path; // Store the original image URL
+      } else {
+        // If the image is unsafe, save the blurred version from moderation response
+        const moderationData = imageModerationResult?.data || {};
+        coverImage = moderationData.blurred_image_base64 || null; // Store the blurred image as coverImage
+        originalImage = req.file.path; // Still store the original image URL for future access by the user
+      }
     }
 
     const structuredContent = parsedContent.map((block) => ({
@@ -170,6 +211,7 @@ exports.createArticle = async (req, res) => {
       content: structuredContent,
       tags: parsedTags,
       coverImage,
+      originalImage,
       meta: parsedMeta,
       slug: generateSlug(title),
       publishedAt: Date.now(),
@@ -236,11 +278,15 @@ exports.updateArticle = async (req, res) => {
     }
 
     // Handle file upload
-    if (req.file) {
-      article.coverImage = await azureBlobService.uploadToAzure(
-        req.file.buffer,
-        req.file.originalname
-      );
+    // if (req.file) {
+    //   article.coverImage = await azureBlobService.uploadToAzure(
+    //     req.file.buffer,
+    //     req.file.originalname
+    //   );
+    // }
+
+    if (req.file && req.file.path) {
+      article.coverImage = req.file.path; // Multer + Cloudinary sets this to Cloudinary URL
     }
 
     // Update fields
@@ -330,7 +376,7 @@ exports.addComment = async (req, res) => {
     let moderationResponse;
     try {
       moderationResponse = await axios.post(
-        "https://mridul2003-aifiltercontent.hf.space/filtercomment",
+        "https://execute-partners-backend-2.onrender.com/filtercomment",
         form,
         {
           headers: form.getHeaders(),

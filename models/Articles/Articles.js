@@ -80,6 +80,7 @@ const articleSchema = new mongoose.Schema({
   content: [contentBlockSchema],
   tags: [String],
   coverImage: String,
+  originalImage: { type: String, required: false },
   likes: [{ 
     type: mongoose.Schema.Types.ObjectId, 
     ref: "User" 
