@@ -25,7 +25,7 @@ def get_article_by_id(article_id):
     except Exception:
         return None
 
-@app.route("/summarize", methods=["POST"])
+@app.route("/summarize", methods=["POST","OPTIONS"])
 def summarize_article():
     data = request.get_json()
     article_id = data.get("article_id")
