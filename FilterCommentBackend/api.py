@@ -75,6 +75,7 @@
 #     uvicorn.run(app, host="0.0.0.0", port=3000)
 
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from model_loader import ModelLoader
 from services.text_filter import TextFilterService
 from services.llm_text_filter import ArticleClassifier
@@ -98,6 +99,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+CORS(app)
 logger.info("Starting Flask app...")
 
 model_loader = ModelLoader()
@@ -116,7 +118,7 @@ def blur_image(pil_image: Image.Image) -> Image.Image:
     blurred_pil = Image.fromarray(cv2.cvtColor(blurred_cv, cv2.COLOR_BGR2RGB))
     return blurred_pil
 
-@app.route("/filtercomment", methods=["POST"])
+@app.route("/filtercomment", methods=["POST","OPTIONS"])
 def filter_comment():
     text = request.form.get("text")
     image_url = request.form.get("image_url")
