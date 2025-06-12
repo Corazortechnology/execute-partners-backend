@@ -130,7 +130,18 @@ exports.createArticle = async (req, res) => {
     let imageModerationResult = null;
     const imageForm = new FormData();
     if (req.file) {
-      imageForm.append("image_file", req.file.buffer, req.file.originalname);
+      // imageForm.append("image_file", req.file.buffer, req.file.originalname);
+      const imageStreamResponse = await axios({
+        method: "get",
+        url: req.file.path,
+        responseType: "stream",
+      });
+
+      imageForm.append("image_file", imageStreamResponse.data, {
+        filename: req.file.originalname || "image.jpg",
+        contentType: req.file.mimetype || "image/jpeg",
+      });
+
       imageForm.append("article", "true");
     }
 
