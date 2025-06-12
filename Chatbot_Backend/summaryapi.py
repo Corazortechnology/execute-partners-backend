@@ -1,10 +1,12 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from pymongo import MongoClient
 from bson import ObjectId
 from llm_service import call_gemini
 from dotenv import load_dotenv
 import os
 app = Flask(__name__)
+CORS(app)
 load_dotenv()
 MONGO_URI = os.getenv("MONGO_URI")
 DATABASE_NAME = os.getenv("DATABASE_NAME")
@@ -23,7 +25,7 @@ def get_article_by_id(article_id):
     except Exception:
         return None
 
-@app.route("/summarize", methods=["POST"])
+@app.route("/summarize", methods=["POST","OPTIONAL"])
 def summarize_article():
     data = request.get_json()
     article_id = data.get("article_id")
