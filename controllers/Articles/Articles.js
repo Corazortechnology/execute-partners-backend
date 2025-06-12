@@ -212,6 +212,7 @@ exports.createArticle = async (req, res) => {
       tags: parsedTags,
       coverImage,
       originalImage,
+      isPublished: true,
       meta: parsedMeta,
       slug: generateSlug(title),
       publishedAt: Date.now(),
