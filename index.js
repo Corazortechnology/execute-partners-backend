@@ -39,17 +39,28 @@ const commentRoutes = require("./routes/comment/commentRoutes");
 const pagesVideosRoute = require("./routes/SectionVideo/pageVideoRoutes");
 const documentRoute = require("./routes/Document/document");
 const fetchAndStoreNewsForAllCategories = require("./services/mediumService");
+const articleRoutes = require("./routes/Articles/Articles");
+const chatRoutes = require("./routes/Chats/chatRoutes");
 const cron = require("node-cron");
+const Chat = require("./models/Chats/Chat");
 
 const app = express();
+const http = require("http");
+const socketIo = require("socket.io");
+const server = http.createServer(app);
+const io = socketIo(server);
 
-app.use(cors({
-  origin: '*',
-  methods: ['GET','HEAD','PUT','PATCH','POST','DELETE','OPTIONS'],
-  allowedHeaders: ['Content-Type','Authorization','X-Requested-With'],
-}));
-app.options('*', cors());
+// Set up socket.io for real time communication
+let users = {}; // To store the connected users
 
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  })
+);
+app.options("*", cors());
 
 app.use(express.json());
 
@@ -92,10 +103,8 @@ const port = process.env.PORT;
 //   next();
 // });
 
-
 // app.use(cors());
 // app.options("*", cors());
-
 
 app.use(session({ secret: "secret", resave: false, saveUninitialized: false }));
 
@@ -133,6 +142,62 @@ app.use(`${api}/practice`, Quote);
 app.use(`${api}/home`, homeQuote, featureRoutes);
 app.use(`${api}/section`, pagesVideosRoute);
 app.use(`${api}/document`, documentRoute);
+app.use(`${api}/articles`, articleRoutes);
+app.use(`${api}/chat`, chatRoutes);
+
+// To handle a new connection
+io.on("connection", (socket) => {
+  console.log(`New user connected: ${socket.id}`);
+
+  // Add debug logging for all events
+  socket.onAny((event, ...args) => {
+    console.log(`[${socket.id}] Received event: ${event}`, args);
+  });
+
+  // Add user to users object
+  socket.on("register", (userId) => {
+    console.log(`Registering user: ${userId} to socket: ${socket.id}`);
+    users[userId] = socket.id;
+  });
+
+  // Listen for incoming messages
+  socket.on("send_message", async (data) => {
+    console.log(`Received message from ${socket.id}:`, data);
+    
+    try {
+      const { senderId, receiverId, message } = data;
+      const chat = new Chat({ sender: senderId, receiver: receiverId, message });
+      await chat.save();
+      console.log("Message saved to DB");
+
+      // Emit to receiver if connected
+      if (users[receiverId]) {
+        io.to(users[receiverId]).emit("receive_message", {
+          senderId,
+          message,
+          timestamp: chat.timestamp
+        });
+        console.log(`Message forwarded to ${receiverId}`);
+      } else {
+        console.log(`Receiver ${receiverId} not connected`);
+      }
+    } catch (error) {
+      console.error("Error handling message:", error);
+    }
+  });
+
+  // Handle Disconnect
+  socket.on("disconnect", () => {
+    console.log(`User disconnected: ${socket.id}`);
+    for (const [userId, socketId] of Object.entries(users)) {
+      if (socketId === socket.id) {
+        delete users[userId];
+        console.log(`Removed user: ${userId}`);
+        break;
+      }
+    }
+  });
+});
 
 mongoose
   .connect(process.env.CONNECTION_STRING)
@@ -149,6 +214,11 @@ cron.schedule("0 */6 * * *", () => {
   fetchAndStoreNewsForAllCategories();
 });
 
-app.listen(port, () => {
+//  cron.schedule("*/1 * * * *", () => {
+//   fetchAndStoreNewsForAllCategories();
+//   console.log("Fetching and storing news...");
+// });
+
+server.listen(port, () => {
   console.log(`Server is runinng on port ${port}`);
 });

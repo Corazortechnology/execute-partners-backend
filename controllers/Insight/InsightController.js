@@ -61,22 +61,30 @@ exports.updateSubheading = async (req, res) => {
 };
 
 // Add a new card
-// Add a new card
 exports.addCard = async (req, res) => {
   try {
     const { heading, description, dateTime, readDuration, category, content, references, socialLinks, headingLinks, descriptionLinks } = req.body;
     const image = req.file;
 
-    console.log("Received Data:", { heading, description, dateTime, readDuration, category, references, socialLinks, headingLinks, descriptionLinks });
+    // console.log("Received Data:", { heading, description, dateTime, readDuration, category, references, socialLinks, headingLinks, descriptionLinks });
+
+    // Upload image if provided
+    // let imageUrl = null;
+    // if (image) {
+    //   console.log("Uploading Image:", image.originalname);
+    //   imageUrl = await azureBlobService.uploadToAzure(
+    //     image.buffer,
+    //     image.originalname
+    //   );
+    // }
 
     // Upload image if provided
     let imageUrl = null;
-    if (image) {
-      console.log("Uploading Image:", image.originalname);
-      imageUrl = await azureBlobService.uploadToAzure(
-        image.buffer,
-        image.originalname
-      );
+    // console.log("Incoming file:", req.file);
+    if (req.file && req.file.path) {
+      // console.log("req.file:", req.file);
+      imageUrl = req.file.path;
+      // console.log("Image uploaded to Cloudinary:", imageUrl);
     }
 
     // Find or create Insights document
@@ -169,22 +177,23 @@ exports.addCard = async (req, res) => {
   }
 };
 
-
 // Update a specific card
 // Update a specific card
 exports.updateCard = async (req, res) => {
   try {
     const { id } = req.params;
     const { heading, description, dateTime, readDuration, category, content, references, socialLinks, headingLinks, descriptionLinks } = req.body;
-    let imageUrl = null;
+    
 
     // ✅ Upload image if provided
-    if (req.file) {
-      imageUrl = await azureBlobService.uploadToAzure(
-        req.file.buffer,
-        req.file.originalname
-      );
-    }
+    // if (req.file) {
+    //   imageUrl = await azureBlobService.uploadToAzure(
+    //     req.file.buffer,
+    //     req.file.originalname
+    //   );
+    // }
+
+    let imageUrl = req.file?.path || null;
 
     // ✅ Find the insight document
     const insights = await Insight.findOne();

@@ -23,9 +23,6 @@ exports.getAllNews = async (req, res) => {
   }
 };
 
-
-
-
 // Get a specific news by ID
 exports.getNews = async (req, res) => {
   const { id } = req.params;

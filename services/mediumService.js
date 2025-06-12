@@ -19,7 +19,7 @@ const fetchNews = async (
 ) => {
   const url = `https://real-time-news-data.p.rapidapi.com/search?query=${encodeURIComponent(
     query
-  )}&limit=${limit}&time_published=${timePublished}&lang=${lang}`;
+  )}&limit=${limit}&time_published=${timePublished}&lang=${lang}&country=IN`;
   const options = {
     method: "GET",
     headers: {
@@ -55,6 +55,24 @@ const filterNewsByCategory = (newsData, category) => {
         "workforce",
       ];
       return hrKeywords.some(
+        (keyword) => title.includes(keyword) || snippet.includes(keyword)
+      );
+    }
+
+    // Extended handling for "Digital" category to include AI-related keywords
+    if (categoryLower === "digital") {
+      const digitalKeywords = [
+        "digital",
+        "ai",
+        "artificial intelligence",
+        "machine learning",
+        "deep learning",
+        "automation",
+        "generative ai",
+        "large language model",
+        "chatgpt",
+      ];
+      return digitalKeywords.some(
         (keyword) => title.includes(keyword) || snippet.includes(keyword)
       );
     }
@@ -115,15 +133,92 @@ const storeNewsInDatabase = async (filteredNews, category) => {
 };
 
 // Fetch and store news for all categories
+// const fetchAndStoreNewsForAllCategories = async () => {
+//   try {
+//     for (const category of ALLOWED_CATEGORIES) {
+//       const newsData = await fetchNews(category, 2, "1d", "en");
+
+//       if (newsData.status === "OK" && newsData.data.length > 0) {
+//         let filteredNews = newsData.data;
+
+//         // Additional filtering for "People" category to include only HR-related news
+//         if (category.toLowerCase() === "people") {
+//           const hrKeywords = [
+//             "hr",
+//             "human resources",
+//             "recruitment",
+//             "employee",
+//             "workforce",
+//           ];
+//           filteredNews = filteredNews.filter((news) => {
+//             const title = news.title?.toLowerCase();
+//             const snippet = news.snippet?.toLowerCase();
+//             return hrKeywords.some(
+//               (keyword) => title.includes(keyword) || snippet.includes(keyword)
+//             );
+//           });
+//         }
+
+//         // Extended handling for "Digital" category to include AI-related keywords
+//         if (categoryLower === "digital") {
+//           const digitalKeywords = [
+//             "digital",
+//             "ai",
+//             "artificial intelligence",
+//             "machine learning",
+//             "deep learning",
+//             "automation",
+//             "generative ai",
+//             "large language model",
+//             "chatgpt",
+//           ];
+//           return digitalKeywords.some(
+//             (keyword) => title.includes(keyword) || snippet.includes(keyword)
+//           );
+//         }
+
+//         if (filteredNews.length > 0) {
+//           await storeNewsInDatabase(filteredNews, category);
+//         } else {
+//           console.log(`No relevant news found for category: ${category}`);
+//         }
+//       }
+//     }
+//   } catch (error) {
+//     console.error("Error fetching and storing news:", error);
+//   }
+// };
+
 const fetchAndStoreNewsForAllCategories = async () => {
   try {
     for (const category of ALLOWED_CATEGORIES) {
-      const newsData = await fetchNews(category, 2, "1d", "en");
+      // 🔁 Step 1: Expand query if category is "Digital" or "People"
+      let query = category;
+      if (category.toLowerCase() === "digital") {
+        query =
+          "Digital OR AI OR 'Artificial Intelligence' OR 'Machine Learning' OR 'Generative AI' OR ChatGPT";
+      } else if (category.toLowerCase() === "people") {
+        query =
+          "HR OR 'Human Resources' OR Recruitment OR Employee OR Workforce";
+      }
+
+      // 🔁 Step 2: Fetch news using the updated query
+      const newsData = await fetchNews(query, 2, "1d", "en");
 
       if (newsData.status === "OK" && newsData.data.length > 0) {
         let filteredNews = newsData.data;
-        
-        // Additional filtering for "People" category to include only HR-related news
+
+        const titleIncludes = (news, keywords) => {
+          const title = news.title?.toLowerCase() || "";
+          const snippet = news.snippet?.toLowerCase() || "";
+          return keywords.some(
+            (keyword) =>
+              title.includes(keyword.toLowerCase()) ||
+              snippet.includes(keyword.toLowerCase())
+          );
+        };
+
+        // ✅ Step 3: Apply filtering if needed
         if (category.toLowerCase() === "people") {
           const hrKeywords = [
             "hr",
@@ -132,16 +227,31 @@ const fetchAndStoreNewsForAllCategories = async () => {
             "employee",
             "workforce",
           ];
-          filteredNews = filteredNews.filter((news) => {
-            const title = news.title?.toLowerCase();
-            const snippet = news.snippet?.toLowerCase();
-            return hrKeywords.some(
-              (keyword) => title.includes(keyword) || snippet.includes(keyword)
-            );
-          });
+          filteredNews = filteredNews.filter((news) =>
+            titleIncludes(news, hrKeywords)
+          );
         }
 
+        if (category.toLowerCase() === "digital") {
+          const digitalKeywords = [
+            "digital",
+            "ai",
+            "artificial intelligence",
+            "machine learning",
+            "deep learning",
+            "automation",
+            "generative ai",
+            "large language model",
+            "chatgpt",
+          ];
+          filteredNews = filteredNews.filter((news) =>
+            titleIncludes(news, digitalKeywords)
+          );
+        }
+
+        // ✅ Step 4: Store filtered news
         if (filteredNews.length > 0) {
+          console.log("Calling store news")
           await storeNewsInDatabase(filteredNews, category);
         } else {
           console.log(`No relevant news found for category: ${category}`);
@@ -152,5 +262,6 @@ const fetchAndStoreNewsForAllCategories = async () => {
     console.error("Error fetching and storing news:", error);
   }
 };
+
 
 module.exports = fetchAndStoreNewsForAllCategories;

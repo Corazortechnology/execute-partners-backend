@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const multer = require("multer");
+// const multer = require("multer");
 
 // Use memory storage to store file in memory before uploading to Azure
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
+// const storage = multer.memoryStorage();
+// const upload = multer({ storage });
 
 const {
   getInsights,
@@ -18,6 +18,8 @@ const {
   deleteContentFromCard,
 } = require("../../controllers/Insight/InsightController");
 const authMiddleware = require("../../middlewares/authMiddleware");
+
+const upload  = require("../../config/multer")
 
 // 📌 **Get all insights (subheading + cards)**
 router.get("/", getInsights);
