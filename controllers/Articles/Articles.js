@@ -139,7 +139,7 @@ exports.createArticle = async (req, res) => {
     try {
       [textModerationResult, imageModerationResult] = await Promise.all([
         axios.post(
-          "https://execute-partners-backend-2.onrender.com/filtercomment",
+          "https://execute-partners-backend-1-cvql.onrender.com/filtercomment",
           textForm,
           {
             headers: textForm.getHeaders(),
@@ -147,7 +147,7 @@ exports.createArticle = async (req, res) => {
         ),
         req.file
           ? axios.post(
-              "https://execute-partners-backend-2.onrender.com/filtercomment",
+              "https://execute-partners-backend-1-cvql.onrender.com/filtercomment",
               imageForm,
               {
                 headers: imageForm.getHeaders(),
@@ -377,7 +377,7 @@ exports.addComment = async (req, res) => {
     let moderationResponse;
     try {
       moderationResponse = await axios.post(
-        "https://execute-partners-backend-2.onrender.com/filtercomment",
+        "https://execute-partners-backend-1-cvql.onrender.com/filtercomment",
         form,
         {
           headers: form.getHeaders(),
