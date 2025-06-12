@@ -8,3 +8,4 @@ langchain-google-genai
 python-dotenv
 google-generativeai 
 opencv-python
+flask-cors
