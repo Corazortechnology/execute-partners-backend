@@ -27,16 +27,23 @@ class ArticleWriterModule:
             return self._generate_titles()
 
         elif self.stage == "awaiting_title_choice":
+            titles = [t.strip().lower() for t in self.context.get("titles", "").split('\n') if t.strip()]
+            if user_msg.strip().lower() not in titles:
+                return "Please select one of the provided titles."
             self.context["chosen_title"] = user_msg
-            self.context["title"] = user_msg  # Store title for later use
+            self.context["title"] = user_msg
             self.stage = "generating_blog_ideas"
             return self._generate_blog_ideas()
-
+        
         elif self.stage == "awaiting_blog_choice":
+            ideas = [i.strip().lower() for i in self.context.get("ideas", "").split('\n') if i.strip()]
+            if user_msg.strip().lower() not in ideas:
+                return "Please select one of the provided blog ideas."
             self.context["chosen_blog"] = user_msg
-            self.context["blog_idea"] = user_msg  # <-- Add this line
+            self.context["blog_idea"] = user_msg
             self.stage = "generating_final_article"
             return self._generate_article()
+
 
         return None # Should not be reached
 
