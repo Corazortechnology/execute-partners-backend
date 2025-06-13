@@ -13,7 +13,11 @@ app = Flask(__name__)
 #      allow_headers=["Content-Type", "Authorization"],
 #      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 #      max_age=timedelta(days=1))
-CORS(app)
+CORS(app, 
+     supports_credentials=True,
+     resources={r"/*": {"origins": "*"}},
+     allow_headers=["Content-Type", "Authorization"],
+     methods=["GET", "POST", "OPTIONS"])
 
 load_dotenv()
 MONGO_URI = os.getenv("MONGO_URI")
@@ -50,8 +54,10 @@ def get_comment_content_by_id(db, comment_id):
         return article["comments"][0]["content"]
     return None
 
-@app.route("/summarize", methods=["POST"])
+@app.route("/summarize", methods=["POST","OPTIONS"])
 def summarize_article():
+    if request.method == "OPTIONS":
+        return '',200
     data = request.get_json()
     article_id = data.get("article_id","")
     comment_id = data.get("comment_id","")
