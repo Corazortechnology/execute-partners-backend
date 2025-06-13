@@ -5,8 +5,14 @@ from bson import ObjectId
 from llm_service import call_gemini
 from dotenv import load_dotenv
 import os
+from datetime import timedelta
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins":"*"}})
+CORS(app, 
+     supports_credentials=True,
+     origins="*",
+     allow_headers=["Content-Type", "Authorization"],
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+     max_age=timedelta(days=1))
 
 load_dotenv()
 MONGO_URI = os.getenv("MONGO_URI")
