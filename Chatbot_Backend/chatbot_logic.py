@@ -27,8 +27,12 @@ class ArticleWriterModule:
             return self._generate_titles()
 
         elif self.stage == "awaiting_title_choice":
-            titles = [t.strip().lower() for t in self.context.get("titles", "").split('\n') if t.strip()]
-            if user_msg.strip().lower() not in titles:
+            titles = [
+                    re.sub(r'[^a-zA-Z\s]', '', t.strip().lower()) 
+                    for t in self.context.get("titles", "").split('\n') 
+                    if t.strip()
+                ]
+            if user_msg.strip().lower()==" ":
                 return "Please select one of the provided titles."
             self.context["chosen_title"] = user_msg
             self.context["title"] = user_msg
