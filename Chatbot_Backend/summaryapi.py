@@ -51,8 +51,7 @@ def summarize_article():
     
     article = get_article_by_id(article_id)
     comment = get_comment_content_by_id(db,comment_id)
-    if not article:
-        return jsonify({"error": f"Article with ID {article_id} not found."}), 404
+   
 
     # Fetch title and meta description
     # Summarize meta description
