@@ -7,12 +7,13 @@ from dotenv import load_dotenv
 import os
 from datetime import timedelta
 app = Flask(__name__)
-CORS(app, 
-     supports_credentials=True,
-     origins="*",
-     allow_headers=["Content-Type", "Authorization"],
-     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-     max_age=timedelta(days=1))
+# CORS(app, 
+#      supports_credentials=True,
+#      origins="*",
+#      allow_headers=["Content-Type", "Authorization"],
+#      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+#      max_age=timedelta(days=1))
+CORS(app)
 
 load_dotenv()
 MONGO_URI = os.getenv("MONGO_URI")
