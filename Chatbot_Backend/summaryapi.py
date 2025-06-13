@@ -6,7 +6,7 @@ from llm_service import call_gemini
 from dotenv import load_dotenv
 import os
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:5173/Community","https://www.executepartners.com/Community"}}, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": ["http://localhost:5173/Community","https://www.executepartners.com/Community"]}}, supports_credentials=True)
 load_dotenv()
 MONGO_URI = os.getenv("MONGO_URI")
 DATABASE_NAME = os.getenv("DATABASE_NAME")
