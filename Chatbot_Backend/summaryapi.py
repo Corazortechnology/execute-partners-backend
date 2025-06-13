@@ -16,26 +16,30 @@ app = Flask(__name__)
 CORS(app, 
      supports_credentials=True,
      resources={r"/*": {"origins": "*"}},
-     allow_headers=["Content-Type", "Authorization"],
-     methods=["GET", "POST", "OPTIONS"])
+     allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+     expose_headers=["Content-Type", "Authorization"])
 
 load_dotenv()
+
 MONGO_URI = os.getenv("MONGO_URI")
 DATABASE_NAME = os.getenv("DATABASE_NAME")
 COLLECTION_NAME = os.getenv("COLLECTION_NAME")
-# MongoDB setup (adjust URI and db/collection names as needed)
-client = MongoClient(MONGO_URI,tlsAllowInvalidCertificates=True)
+
+# MongoDB setup
+client = MongoClient(MONGO_URI, tlsAllowInvalidCertificates=True)
 db = client[DATABASE_NAME]
 mycol = db[COLLECTION_NAME]
-
 
 def get_article_by_id(article_id):
     try:
         print(ObjectId(article_id))
         article = mycol.find_one({"_id": ObjectId(article_id)})
         return article
-    except Exception:
+    except Exception as e:
+        print(f"Error fetching article: {e}")
         return None
+
 def get_comment_content_by_id(db, comment_id):
     if not isinstance(comment_id, ObjectId):
         try:
@@ -43,16 +47,27 @@ def get_comment_content_by_id(db, comment_id):
         except Exception as e:
             print(f"Invalid comment_id: {e}")
             return None
-
+    
     article = db.articles.find_one({
         "comments._id": comment_id
     }, {
         "comments.$": 1
     })
-
+    
     if article and "comments" in article and article["comments"]:
         return article["comments"][0]["content"]
     return None
+
+# Add explicit OPTIONS handler for preflight requests
+@app.before_request
+def handle_preflight():
+    if request.method == "OPTIONS":
+        response = jsonify({})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add('Access-Control-Allow-Headers', "Content-Type,Authorization,X-Requested-With")
+        response.headers.add('Access-Control-Allow-Methods', "GET,POST,PUT,DELETE,OPTIONS")
+        response.headers.add('Access-Control-Allow-Credentials', "true")
+        return response
 
 @app.route("/summarize", methods=["POST","OPTIONS"])
 def summarize_article():
