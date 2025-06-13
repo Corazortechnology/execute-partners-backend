@@ -57,9 +57,10 @@ def summarize_article():
     # Summarize meta description
     if article is None:
         summary_meta= ""
-    title = article.get("title", "")
-    meta_desc = article.get("meta", {}).get("description", "")
-    summary_meta = call_gemini("summary", context_vars={"text":title+meta_desc}) if meta_desc else ""
+    else:
+        title = article.get("title", "")
+        meta_desc = article.get("meta", {}).get("description", "")
+        summary_meta = call_gemini("summary", context_vars={"text":title+meta_desc}) if meta_desc else ""
     if comment is not None:
         comment_summary = call_gemini("summary",context_vars={"text":comment})
         response={"title":title,"article_summary":summary_meta,"comment_summary":comment_summary}
