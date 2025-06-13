@@ -43,8 +43,10 @@ def get_comment_content_by_id(db, comment_id):
         return article["comments"][0]["content"]
     return None
 
-@app.route("/summarize", methods=["POST"])
+@app.route("/summarize", methods=["POST","OPTIONS"])
 def summarize_article():
+    if request.method == "OPTIONS":
+        return '', 200
     data = request.get_json()
     article_id = data.get("article_id","")
     comment_id = data.get("comment_id","")
