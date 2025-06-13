@@ -41,7 +41,7 @@ class ArticleWriterModule:
         
         elif self.stage == "awaiting_blog_choice":
             ideas = [i.strip().lower() for i in self.context.get("ideas", "").split('\n') if i.strip()]
-            if user_msg.strip().lower() not in ideas:
+            if user_msg.strip().lower() == " ":
                 return "Please select one of the provided blog ideas."
             self.context["chosen_blog"] = user_msg
             self.context["blog_idea"] = user_msg
