@@ -24,25 +24,46 @@ def get_article_by_id(article_id):
         return article
     except Exception:
         return None
+def get_comment_content_by_id(db, comment_id):
+    if not isinstance(comment_id, ObjectId):
+        try:
+            comment_id = ObjectId(comment_id)
+        except Exception as e:
+            print(f"Invalid comment_id: {e}")
+            return None
+
+    article = db.articles.find_one({
+        "comments._id": comment_id
+    }, {
+        "comments.$": 1
+    })
+
+    if article and "comments" in article and article["comments"]:
+        return article["comments"][0]["content"]
+    return None
 
 @app.route("/summarize", methods=["POST","OPTIONS"])
 def summarize_article():
     data = request.get_json()
-    article_id = data.get("article_id")
-    if not article_id:
-        return jsonify({"error": "article_id is required"}), 400
-
+    article_id = data.get("article_id","")
+    comment_id = data.get("comment_id","")
+    
+    
     article = get_article_by_id(article_id)
+    comment = get_comment_content_by_id(db,comment_id)
     if not article:
         return jsonify({"error": f"Article with ID {article_id} not found."}), 404
 
     # Fetch title and meta description
+    # Summarize meta description
+    if article is None:
+        summary_meta= ""
     title = article.get("title", "")
     meta_desc = article.get("meta", {}).get("description", "")
-
-    # Summarize meta description
     summary_meta = call_gemini("summary", context_vars={"text":title+meta_desc}) if meta_desc else ""
-
+    if comment is not None:
+        comment_summary = call_gemini("summary",context_vars={"text":comment})
+        response={"title":title,"article_summary":summary_meta,"comment_summary":comment_summary}
     response = {
         "title": title,
         "summary": summary_meta,
