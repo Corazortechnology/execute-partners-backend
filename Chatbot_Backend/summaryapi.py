@@ -48,26 +48,31 @@ def summarize_article():
     article_id = data.get("article_id","")
     comment_id = data.get("comment_id","")
     
-    
     article = get_article_by_id(article_id)
     comment = get_comment_content_by_id(db,comment_id)
-   
 
-    # Fetch title and meta description
-    # Summarize meta description
-    if article is None:
-        summary_meta= ""
-    title = article.get("title", "")
-    meta_desc = article.get("meta", {}).get("description", "")
-    summary_meta = call_gemini("summary", context_vars={"text":title+meta_desc}) if meta_desc else ""
+    # Fetch title and meta description safely
+    if article is not None:
+        title = article.get("title", "")
+        meta_desc = article.get("meta", {}).get("description", "")
+    else:
+        title = ""
+        meta_desc = ""
+
+    summary_meta = call_gemini("summary", context_vars={"text": title + meta_desc}) if meta_desc else ""
+
     if comment is not None:
-        comment_summary = call_gemini("summary",context_vars={"text":comment})
-        response={"title":title,"article_summary":summary_meta,"comment_summary":comment_summary}
-    response = {
-        "title": title,
-        "summary": summary_meta,
-    }
+        comment_summary = call_gemini("summary", context_vars={"text": comment})
+        response = {
+            "title": title,
+            "article_summary": summary_meta,
+            "comment_summary": comment_summary
+        }
+    else:
+        response = {
+            "title": title,
+            "summary": summary_meta,
+        }
     return jsonify(response)
-
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8001, debug=True)
