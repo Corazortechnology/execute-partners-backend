@@ -14,8 +14,8 @@ def chat_with_bot():
     session_id = data.get("session_id")
     user_message = data.get("message")
     text = data.get("text","")
-    if not session_id or not user_message:
-        return jsonify({"detail": "session_id and message are required."}), 400
+    if not session_id :
+        return jsonify({"detail": "session_id is required."}), 400
 
     # Get or create a session for the user
     if session_id not in SESSIONS:
