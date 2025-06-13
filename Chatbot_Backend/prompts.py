@@ -26,8 +26,8 @@ PROMPTS = {
 },
     "question_answering": {
         "system_instruction": "You are an expert Q&A assistant.",
-        "prompt": ("You are a helpful assistant. Answer the following question based on the provided article context. If the answer is not in the article, state that clearly and do not provide an answer from your own knowledge.If the text of article is empty or not provided Reply with yohr own knowledge base and search over web.\n\nARTICLE:\n---\n{text}\n---\n\nQUESTION: {question}\n"
-                  "Dont add statements like Since no article was provided, I will provide a general answer based on my knowledge: , Just give answer to question direct"),
+        "prompt": ("You are a helpful assistant. Answer the following question based on the provided article context. If the answer is not in the article, state that clearly and if the text of article is empty or not provided reply with yohr own knowledge base and search over web.\n\nARTICLE:\n---\n{text}\n---\n\nQUESTION: {question}\n"
+                  "Don't add statements like Since no article was provided, I will provide a general answer based on my knowledge: , Just give answer to question direct"),
         "max_tokens": 150
     },
     "generate_titles": {
