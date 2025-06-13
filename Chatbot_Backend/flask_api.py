@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from chatbot_logic import ArticleWriterModule, get_bot_response
 from flask_cors import CORS
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins":["http://localhost:5173","https://www.executepartners.com"]}}, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins":["http://localhost:5173/","https://www.executepartners.com/"]}}, supports_credentials=True)
 SESSIONS = {}
 
 @app.route("/chat", methods=["POST","OPTIONS"])
