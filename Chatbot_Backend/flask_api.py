@@ -6,7 +6,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins":"*"}})
 SESSIONS = {}
 
-@app.route("/chat", methods=["POST","OPTIONS"])
+@app.route("/chat", methods=["POST"])
 def chat_with_bot():
     data = request.get_json()
     session_id = data.get("session_id")
