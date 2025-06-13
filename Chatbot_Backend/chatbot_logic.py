@@ -32,8 +32,7 @@ class ArticleWriterModule:
                     for t in self.context.get("titles", "").split('\n') 
                     if t.strip()
                 ]
-            if user_msg.strip().lower()==" ":
-                return "Please select one of the provided titles."
+            
             self.context["chosen_title"] = user_msg
             self.context["title"] = user_msg
             self.stage = "generating_blog_ideas"
@@ -41,8 +40,7 @@ class ArticleWriterModule:
         
         elif self.stage == "awaiting_blog_choice":
             ideas = [i.strip().lower() for i in self.context.get("ideas", "").split('\n') if i.strip()]
-            if user_msg.strip().lower() == " ":
-                return "Please select one of the provided blog ideas."
+            
             self.context["chosen_blog"] = user_msg
             self.context["blog_idea"] = user_msg
             self.stage = "generating_final_article"
