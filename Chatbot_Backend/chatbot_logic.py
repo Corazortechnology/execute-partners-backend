@@ -109,7 +109,7 @@ def get_bot_response(user_msg: str,text: str,writer_module: ArticleWriterModule)
             # Call the model without inserting an ARTICLE block
             return call_gemini(
                 "question_answering", 
-                context_vars={"text": "", "question": user_msg}
+                context_vars={"question": user_msg}
             )
         else:
             return call_gemini(
