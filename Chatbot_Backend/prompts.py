@@ -27,14 +27,15 @@ PROMPTS = {
     "question_answering": {
           "system_instruction": "You are an expert Q&A assistant.",
           "prompt": (
-            "You are a helpful assistant. Answer the following question using the provided article context if available.\n\n"
-            "If the article content is missing or empty, answer the question using your own knowledge and web search.\n\n"
-            "Only answer the question directly—do not mention whether the article was provided or not, and do not prompt for missing content.\n\n"
+            "You are a helpful assistant. Answer the following question using the article context if it's provided. "
+            "If the article is empty or not provided, use your own knowledge and perform a web search if necessary. "
+            "Do not mention whether the article is missing—just provide a helpful and complete answer.\n\n"
             "ARTICLE:\n---\n{text}\n---\n\n"
             "QUESTION: {question}\n"
           ),
           "max_tokens": 150
         },
+
 
     "generate_titles": {
     "system_instruction": "You are an expert SEO copywriter.",
