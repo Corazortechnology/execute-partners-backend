@@ -7,7 +7,7 @@ PROMPTS = {
     "suggest_topics": {
     "system_instruction": "You are a content strategist.",
     "prompt": (
-        "Act as a content strategist. Based on the following article, suggest 5 new, engaging blog post topics. "
+        "Act as a content strategist. Based on the following Question suggest topics to user."
         "For each topic, provide:\n"
         "1. The topic as a bolded title.\n"
         "2. A brief (1-2 sentence) explanation of the angle or what it would cover.\n\n"
@@ -20,7 +20,7 @@ PROMPTS = {
         "- Ensure the topics are relevant to the article's content.\n"
         "- Focus on unique angles or perspectives that would interest readers.\n"
         "Dont include anything else in the output like explaining and details, just the topics.\n\n"
-        "ARTICLE:\n---\n{text}\n---"
+        "Question:\n---\n{text}\n---"
     ),
     "max_tokens": 200
 },
