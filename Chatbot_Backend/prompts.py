@@ -33,7 +33,9 @@ PROMPTS = {
             "Do not mention whether the article is missing—just provide a helpful and complete answer.\n\n"
             "ARTICLE:\n---\n{text}\n---\n\n"
             "QUESTION: {question}\n"
-            "if ARTICLE:"" empty just give response to answer with your knowledge dont give response like I need the article to suggest 5 new engaging blog post topics. Please provide the article text..\n"
+            "if ARTICLE:"" empty just give response to answer with your knowledge dont give response like I need the article to suggest 5 new engaging blog post topics. Please provide the article text..\n",
+            "Do not give response like for example Okay, I'm ready. Please provide the article. Once you provide the article I will create 5 blog post topics based on the content."
+            "Always answer the question provided with a detail answer whether you have a article context or not"
           ),
           "max_tokens": 150
         },
