@@ -103,4 +103,16 @@ def get_bot_response(user_msg: str,text: str,writer_module: ArticleWriterModule)
     elif intent == "topic":
         return call_gemini("suggest_topics", context_vars={"text": text})
     else: # Default to Q&A
-        return call_gemini("question_answering", context_vars={"text": text, "question": user_msg})
+        clean_text = text.strip() if text else ""
+    
+        if not clean_text:
+            # Call the model without inserting an ARTICLE block
+            return call_gemini(
+                "question_answering", 
+                context_vars={"text": "", "question": user_msg}
+            )
+        else:
+            return call_gemini(
+                "question_answering", 
+                context_vars={"text": clean_text, "question": user_msg}
+            )
