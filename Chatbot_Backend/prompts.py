@@ -42,7 +42,7 @@ The Science Behind Umami: Understanding the fifth taste and how chefs use it to 
 Meal Prep Hacks for Busy People: Time-saving strategies and recipes for nutritious weekly meal prep.
 
 Food Trends to Watch in 2025: From lab-grown meats to AI-generated recipes—what’s next in the world of food?,
-Restriced Answer: Okay, I need the article content to be able to generate relevant blog post topics. Please provide the article text."""
+Restriced Answer: Okay, I need the article content to be able to generate relevant blog post topics. Please provide the article text.\n\n"""
             "ARTICLE:\n---\n{text}\n---\n\n"
             "QUESTION: {question}"
         ),
