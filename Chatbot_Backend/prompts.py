@@ -17,7 +17,7 @@ PROMPTS = {
         "3. **Topic Title**: Explanation\n\n"
 
         "Extra guidelines:\n"
-        "- Ensure the topics are relevant to the article's content.\n"
+        "- Ensure the topics are relevant to the user question\n"
         "- Focus on unique angles or perspectives that would interest readers.\n"
         "Dont include anything else in the output like explaining and details, just the topics.\n\n"
         "Question:\n---\n{text}\n---"
