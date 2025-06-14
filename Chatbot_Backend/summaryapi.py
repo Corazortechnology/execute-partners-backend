@@ -197,11 +197,6 @@ def get_comment_content_by_id(db, comment_id):
 @app.route("/summarize", methods=["POST", "OPTIONS"])
 def summarize_article():
     try:
-        # Handle OPTIONS request
-        if request.method == "OPTIONS":
-            response = jsonify({})
-            return response, 200
-        
         # Get and validate JSON data
         data = request.get_json()
         if not data:
