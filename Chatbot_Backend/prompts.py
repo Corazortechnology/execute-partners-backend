@@ -7,7 +7,7 @@ PROMPTS = {
     "suggest_topics": {
     "system_instruction": "You are a content strategist.",
     "prompt": (
-        "You are a content strategist. Based on the following user interest or topic keyword, suggest 5 unique blog post topics.\n"
+        "You are a content strategist. Based on the following user interest or topic keyword, suggest unique blog post topics.\n"
         "Each topic must include:\n"
         "1. The topic as a bolded title.\n"
         "2. A 1-2 sentence explanation of the angle or what it would cover.\n\n"
