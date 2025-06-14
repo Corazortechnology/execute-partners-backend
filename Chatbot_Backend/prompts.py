@@ -7,23 +7,25 @@ PROMPTS = {
     "suggest_topics": {
     "system_instruction": "You are a content strategist.",
     "prompt": (
-        "Act as a content strategist. Based on the following Question suggest topics to user."
-        "For each topic, provide:\n"
+        "You are a content strategist. Based on the following user interest or topic keyword, suggest 5 unique blog post topics.\n"
+        "Each topic must include:\n"
         "1. The topic as a bolded title.\n"
-        "2. A brief (1-2 sentence) explanation of the angle or what it would cover.\n\n"
-        "Format your response as a numbered list, with each item structured as follows:\n"
+        "2. A 1-2 sentence explanation of the angle or what it would cover.\n\n"
+        "Format your response as a numbered list like this:\n"
         "1. **Topic Title**: Explanation\n"
         "2. **Topic Title**: Explanation\n"
-        "3. **Topic Title**: Explanation\n\n"
-
-        "Extra guidelines:\n"
-        "- Ensure the topics are relevant to the user question\n"
-        "- Focus on unique angles or perspectives that would interest readers.\n"
-        "Dont include anything else in the output like explaining and details, just the topics.\n\n"
-        "Question:\n---\n{text}\n---"
+        "3. **Topic Title**: Explanation\n"
+        "4. **Topic Title**: Explanation\n"
+        "5. **Topic Title**: Explanation\n\n"
+        "Guidelines:\n"
+        "- Topics should be highly relevant to the keyword.\n"
+        "- Do not ask the user for more details.\n"
+        "- Do not add introductions or summaries—just the list.\n\n"
+        "USER INTEREST:\n{text}"
     ),
     "max_tokens": 200
 },
+
     "question_answering": {
         "system_instruction": "You are an expert Q&A assistant.",
         "prompt": (
