@@ -68,7 +68,9 @@ exports.getArticleById = async (req, res) => {
 
     // Increment views
     article.views += 1;
+    console.log("Before save:", article.views);
     await article.save();
+    console.log("After save:", article.views);
 
     res.status(200).json({
       message: "Article retrieved successfully",
@@ -354,28 +356,53 @@ exports.deleteArticle = async (req, res) => {
 // Add like to article
 exports.likeArticle = async (req, res) => {
   try {
-    const article = await Article.findByIdAndUpdate(
-      req.params.id,
-      {
-        $addToSet: { likes: req.user._id },
-        $inc: { claps: 1 },
-      },
-      { new: true }
-    );
+    const userId = req.user._id;
+    const article = await Article.findById(req.params.id);
 
-    // Add to user's liked articles
-    await User.findByIdAndUpdate(req.user._id, {
-      $addToSet: { likedArticles: article._id },
-    });
+    if (!article) {
+      return res.status(404).json({ message: "Article not found" });
+    }
 
-    res.status(200).json({
-      message: "Article liked successfully",
-      data: article,
-    });
+    const alreadyLiked = article.likes.includes(userId);
+
+    if (alreadyLiked) {
+      // Unlike the article
+      article.likes.pull(userId);
+      article.claps = Math.max(0, article.claps - 1); // Prevent claps < 0
+
+      // Remove from user's liked articles (optional)
+      await User.findByIdAndUpdate(userId, {
+        $pull: { likedArticles: article._id },
+      });
+
+      await article.save();
+      return res.status(200).json({
+        message: "Article unliked",
+        claps: article.claps,
+      });
+
+    } else {
+      // Like the article
+      article.likes.push(userId);
+      article.claps += 1;
+
+      await User.findByIdAndUpdate(userId, {
+        $addToSet: { likedArticles: article._id },
+      });
+
+      await article.save();
+      return res.status(200).json({
+        message: "Article liked",
+        claps: article.claps,
+      });
+    }
+
   } catch (error) {
-    res.status(500).json({ message: "Error liking article", error });
+    console.error("Error in likeArticle:", error);
+    res.status(500).json({ message: "Error processing like", error });
   }
 };
+
 
 // Add comment to article
 exports.addComment = async (req, res) => {

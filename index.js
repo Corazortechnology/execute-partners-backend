@@ -111,6 +111,11 @@ app.use(session({ secret: "secret", resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
 
+// app.use((req, res, next) => {
+//   console.log(`📥 Request: ${req.method} ${req.originalUrl} at ${new Date().toISOString()}`);
+//   next();
+// });
+
 app.use(`${api}/auth`, authRoutes);
 app.use(`${api}/about`, aboutRoutes);
 app.use(`${api}/leadership`, leadershipRoutes);
