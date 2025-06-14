@@ -119,6 +119,7 @@ CORS(app,
      resources={
          r"/*": {
              "origins": [ 
+                 "https://html-starter-f9sl5f5qe-mridul-corazors-projects.vercel.app",
                  "https://html-starter-b7nfda735-mridul-corazors-projects.vercel.app",
                  "http://192.168.31.68:5500",
                  "http://localhost:5173", 
