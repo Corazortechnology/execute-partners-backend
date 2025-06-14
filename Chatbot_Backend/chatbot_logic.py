@@ -113,6 +113,6 @@ def get_bot_response(user_msg: str,text: str,writer_module: ArticleWriterModule)
             )
         else:
             return call_gemini(
-                "question_answering", 
+                "question_answering_for_text", 
                 context_vars={"text": clean_text, "question": user_msg}
             )
