@@ -28,7 +28,7 @@ PROMPTS = {
           "system_instruction": "You are an expert Q&A assistant.",
           "prompt": (
             "You are a helpful assistant. Answer the following question using the article context if it's provided. "
-            "If the article is empty or not provided do not ask user for article context or provide article just give answer with your knowledge base. "
+            "If the article is empty or not provided do not ask user for article context or provide article just give answer of user question and if you dont know say i dont know about it."
             "Do not give response for example [I need the article to suggest 5 new engaging blog post topics. Please provide the article text.]\n"
             "Do not mention whether the article is missing—just provide a helpful and complete answer.\n\n"
             "ARTICLE:\n---\n{text}\n---\n\n"
