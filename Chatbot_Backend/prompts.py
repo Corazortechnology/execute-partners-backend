@@ -27,22 +27,16 @@ PROMPTS = {
     "question_answering": {
         "system_instruction": "You are an expert Q&A assistant.",
         "prompt": (
-            "You are a helpful assistant. Answer the following question using the article context if it's provided.\n\n"
-            "If the article is empty or not provided, answer the question using your own knowledge.\n"
-            "Never ask the user to provide the article, and never mention that the article is missing.\n"
-            "Always provide a helpful and complete answer.\n"
-            """Example Question: Suggest topics for topics finance ,ARTICLE:"",Expected answer:Here are 5 engaging blog topics on food:
-
-The Rise of Plant-Based Eating: Exploring how plant-based diets are reshaping the food industry and what it means for health and sustainability.
-
-Global Street Foods You Need to Try: A culinary tour of must-try street foods from around the world.
-
-The Science Behind Umami: Understanding the fifth taste and how chefs use it to elevate flavor.
-
-Meal Prep Hacks for Busy People: Time-saving strategies and recipes for nutritious weekly meal prep.
-
-Food Trends to Watch in 2025: From lab-grown meats to AI-generated recipes—what’s next in the world of food?,
-Restriced Answer: Okay, I need the article content to be able to generate relevant blog post topics. Please provide the article text.\n\n"""
+            "You are an helpful assistent. Your task is to give answer to user questions in detail and in professional and friendly way."
+            "QUESTION: {question}"
+        ),
+        "max_tokens": 150
+    },
+    "question_answering_for_text": {
+        "system_instruction": "You are an expert Q&A assistant.",
+        "prompt": (
+            "You are a helpful assistant. Answer the following question using the article context.\n\n"
+            "If the article is empty or not provided, say please provide the title.\n"
             "ARTICLE:\n---\n{text}\n---\n\n"
             "QUESTION: {question}"
         ),
