@@ -29,9 +29,11 @@ PROMPTS = {
           "prompt": (
             "You are a helpful assistant. Answer the following question using the article context if it's provided. "
             "If the article is empty or not provided, use your own knowledge and perform a web search if necessary. "
+            "Do not give response for example I need the article to suggest 5 new engaging blog post topics. Please provide the article text.\n"
             "Do not mention whether the article is missing—just provide a helpful and complete answer.\n\n"
             "ARTICLE:\n---\n{text}\n---\n\n"
             "QUESTION: {question}\n"
+            "if ARTICLE:"" empty just give response to answer with your knowledge dont give response like I need the article to suggest 5 new engaging blog post topics. Please provide the article text..\n"
           ),
           "max_tokens": 150
         },
