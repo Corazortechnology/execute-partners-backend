@@ -115,16 +115,17 @@ app = Flask(__name__)
 
 # Enhanced CORS configuration
 CORS(app, 
+     supports_credentials: True,
      resources={
          r"/*": {
              "origins": [ 
                  "http://localhost:5173", 
                  "http://127.0.0.1:5173",
-                 "*" 
+                 "https://www.executepartners.com"
              ],
              "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
              "allow_headers": ["Content-Type", "Authorization", "X-Requested-With"],
-             "supports_credentials": True
+             
          }
      })
 
@@ -173,21 +174,21 @@ def get_comment_content_by_id(db, comment_id):
         return None
 
 # Remove duplicate OPTIONS handling - let flask-cors handle it
-@app.after_request
-def after_request(response):
-    origin = request.headers.get('Origin')
+# @app.after_request
+# def after_request(response):
+#     origin = request.headers.get('Origin')
     
-    if origin:
-        response.headers['Access-Control-Allow-Origin'] = origin
-    else:
-        response.headers['Access-Control-Allow-Origin'] = '*'
+#     if origin:
+#         response.headers['Access-Control-Allow-Origin'] = origin
+#     else:
+#         response.headers['Access-Control-Allow-Origin'] = '*'
         
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Requested-With')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
-    response.headers.add('Access-Control-Allow-Credentials', 'true')
-    response.headers['Vary'] = 'Origin'
-    return response
+#     response.headers.add('Access-Control-Allow-Origin', '*')
+#     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Requested-With')
+#     response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
+#     response.headers.add('Access-Control-Allow-Credentials', 'true')
+#     response.headers['Vary'] = 'Origin'
+#     return response
 
 @app.route("/summarize", methods=["POST", "OPTIONS"])
 def summarize_article():
@@ -259,7 +260,16 @@ def summarize_article():
 @app.route("/health", methods=["GET"])
 def health_check():
     return jsonify({"status": "healthy", "message": "Summary API is running"}), 200
-
+    
+@app.route("/cors-test", methods=["GET", "POST", "OPTIONS"])
+def cors_test():
+    return jsonify({
+        "message": "CORS test successful",
+        "method": request.method,
+        "origin": request.headers.get('Origin', 'No Origin'),
+        "headers": dict(request.headers),
+        "render_deployment": True
+    })
 # Test endpoint to check database connection
 @app.route("/test-db", methods=["GET"])
 def test_db():
