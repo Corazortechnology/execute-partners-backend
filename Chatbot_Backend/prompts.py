@@ -25,11 +25,17 @@ PROMPTS = {
     "max_tokens": 200
 },
     "question_answering": {
-        "system_instruction": "You are an expert Q&A assistant.",
-        "prompt": ("You are a helpful assistant. Answer the following question based on the provided article context. If the answer is not in the article, state that clearly and if the text of article is empty or not provided reply with yohr own knowledge base and search over web.\n\nARTICLE:\n---\n{text}\n---\n\nQUESTION: {question}\n"
-                  "Don't add statements like Since no article was provided, I will provide a general answer based on my knowledge: , Just give answer to question direct"),
-        "max_tokens": 150
-    },
+          "system_instruction": "You are an expert Q&A assistant.",
+          "prompt": (
+            "You are a helpful assistant. Answer the following question using the provided article context if available.\n\n"
+            "If the article content is missing or empty, answer the question using your own knowledge and web search.\n\n"
+            "Only answer the question directly—do not mention whether the article was provided or not, and do not prompt for missing content.\n\n"
+            "ARTICLE:\n---\n{text}\n---\n\n"
+            "QUESTION: {question}\n"
+          ),
+          "max_tokens": 150
+        },
+
     "generate_titles": {
     "system_instruction": "You are an expert SEO copywriter.",
     "prompt": (
