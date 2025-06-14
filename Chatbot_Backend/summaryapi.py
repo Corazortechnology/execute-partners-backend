@@ -115,7 +115,7 @@ app = Flask(__name__)
 
 # Enhanced CORS configuration
 CORS(app, 
-     supports_credentials: True,
+     supports_credentials=True,
      resources={
          r"/*": {
              "origins": [ 
