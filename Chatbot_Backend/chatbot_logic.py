@@ -101,7 +101,7 @@ def get_bot_response(user_msg: str,text: str,writer_module: ArticleWriterModule)
     if intent == "summary":
         return call_gemini("summary", context_vars={"text": text})
     elif intent == "topic":
-        return call_gemini("suggest_topics", context_vars={"text": text})
+        return call_gemini("suggest_topics", context_vars={"text": user_msg})
     else: # Default to Q&A
         clean_text = text.strip() if text else ""
     
