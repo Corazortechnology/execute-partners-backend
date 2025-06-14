@@ -25,20 +25,18 @@ PROMPTS = {
     "max_tokens": 200
 },
     "question_answering": {
-          "system_instruction": "You are an expert Q&A assistant.",
-          "prompt": (
-            "You are a helpful assistant. Answer the following question using the article context if it's provided. "
-            "If the article is empty or not provided do not ask user for article context or provide article just give answer of user question and if you dont know say i dont know about it."
-            "Do not give response for example [I need the article to suggest 5 new engaging blog post topics. Please provide the article text.]\n"
-            "Do not mention whether the article is missing—just provide a helpful and complete answer.\n\n"
+        "system_instruction": "You are an expert Q&A assistant.",
+        "prompt": (
+            "You are a helpful assistant. Answer the following question using the article context if it's provided.\n\n"
+            "If the article is empty or not provided, answer the question using your own knowledge.\n"
+            "Never ask the user to provide the article, and never mention that the article is missing.\n"
+            "Always provide a helpful and complete answer.\n\n"
             "ARTICLE:\n---\n{text}\n---\n\n"
-            "QUESTION: {question}\n"
-            "if ARTICLE:"" empty just give response to answer with your knowledge dont give response like I need the article to suggest 5 new engaging blog post topics. Please provide the article text..\n",
-            "Do not give response like for example Okay, I'm ready. Please provide the article. Once you provide the article I will create 5 blog post topics based on the content."
-            "Always answer the question provided with a detail answer whether you have a article context or not"
-          ),
-          "max_tokens": 150
-        },
+            "QUESTION: {question}"
+        ),
+        "max_tokens": 150
+    },
+
 
 
     "generate_titles": {
