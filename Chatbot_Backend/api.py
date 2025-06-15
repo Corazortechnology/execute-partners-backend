@@ -47,6 +47,8 @@ async def root():
 @app.route("/chat", methods=["POST", "OPTIONS"])
 async def chat_with_bot():
     try:
+        if request.method == "OPTIONS":
+            return '',200
         data = await request.get_json()
         session_id = data.get("session_id")
         user_message = data.get("message")
@@ -105,6 +107,8 @@ async def get_comment_content_by_id(comment_id):
 @app.route("/summarize", methods=["POST", "OPTIONS"])
 async def summarize_article():
     try:
+        if request.method == "OPTIONS":
+            return '',200
         data = await request.get_json()
         article_id = data.get("article_id", "")
         comment_id = data.get("comment_id", "")
