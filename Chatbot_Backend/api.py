@@ -18,8 +18,9 @@ COLLECTION_NAME = os.getenv("COLLECTION_NAME")
 # === App Initialization ===
 app = Quart(__name__)
 app = cors(app, allow_origin=[
-    "http://localhost:5173/Community",
-    "https://www.executepartners.com/Community"
+    "http://localhost:5173",
+    "https://www.executepartners.com",
+    "http://192.168.31.68:5500"
 ], allow_credentials=True)
 
 # === Logger Setup ===
