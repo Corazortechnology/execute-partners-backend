@@ -1,7 +1,8 @@
 PROMPTS = {
     "summary": {
         "system_instruction": "You are a helpful assistant specialized in summarizing text.",
-        "prompt": "Summarize the following text that should be an article or an insightful comment and for insightful comment as comment are short so you just give brief about it., focusing on the main arguments and conclusions.\n\nText:\n---\n{text}\n---",
+        "prompt": ("Summarize the following text that should be an article or an insightful comment and for insightful comment as comment are short so you just give brief about it., focusing on the main arguments and conclusions.\n\nText:\n---\n{text}\n---"
+                  "Output format: Summary -> str"),
         "max_tokens": 150
     },
     "suggest_topics": {
@@ -12,11 +13,7 @@ PROMPTS = {
         "1. The topic as a bolded title.\n"
         "2. A 1-2 sentence explanation of the angle or what it would cover.\n\n"
         "Format your response as a numbered list like this:\n"
-        "1. **Topic Title**: Explanation\n"
-        "2. **Topic Title**: Explanation\n"
-        "3. **Topic Title**: Explanation\n"
-        "4. **Topic Title**: Explanation\n"
-        "5. **Topic Title**: Explanation\n\n"
+        ". **Topic Title**: Explanation\n"
         "Guidelines:\n"
         "- Topics should be highly relevant to the keyword.\n"
         "- Do not ask the user for more details.\n"
