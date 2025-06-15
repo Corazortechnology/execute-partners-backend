@@ -48,7 +48,7 @@ async def root():
 async def chat_with_bot():
     try:
         if request.method == "OPTIONS":
-            return '',200
+            return '', 200
         data = await request.get_json()
         session_id = data.get("session_id")
         user_message = data.get("message")
@@ -62,13 +62,23 @@ async def chat_with_bot():
             logging.info(f"New session created: {session_id}")
 
         writer_module = SESSIONS[session_id]
-        bot_reply = get_bot_response(user_message, text, writer_module)
+        bot_result = get_bot_response(user_message, text, writer_module)
 
-        if writer_module.stage == "idle" and "Here is your complete article" in bot_reply:
+        # Unpack result
+        response_text = bot_result.get("text", "")
+        tokens_used = bot_result.get("token_usage", {
+            "input_tokens": 0, "output_tokens": 0, "total_tokens": 0
+        })
+
+        if writer_module.stage == "idle" and "Here is your complete article" in response_text:
             del SESSIONS[session_id]
             logging.info(f"Session closed after article generation: {session_id}")
 
-        return jsonify({"session_id": session_id, "response": bot_reply})
+        return jsonify({
+            "session_id": session_id,
+            "response": response_text,
+            "tokens_used": tokens_used
+        })
 
     except Exception as e:
         logging.error(f"Error in /chat: {e}")
@@ -108,7 +118,7 @@ async def get_comment_content_by_id(comment_id):
 async def summarize_article():
     try:
         if request.method == "OPTIONS":
-            return '',200
+            return '', 200
         data = await request.get_json()
         article_id = data.get("article_id", "")
         comment_id = data.get("comment_id", "")
@@ -119,19 +129,32 @@ async def summarize_article():
         title = article.get("title", "") if article else ""
         meta_desc = article.get("meta", {}).get("description", "") if article else ""
 
-        summary_meta = call_gemini("summary", context_vars={"text": title + meta_desc}) if meta_desc else ""
+        total_tokens_used = {"input_tokens": 0, "output_tokens": 0, "total_tokens": 0}
+
+        summary_meta = None
+        if meta_desc:
+            summary_meta_res = call_gemini("summary", context_vars={"text": title + meta_desc})
+            summary_meta = summary_meta_res["text"]
+            for k in total_tokens_used:
+                total_tokens_used[k] += summary_meta_res["token_usage"].get(k, 0)
 
         if comment:
-            comment_summary = call_gemini("summary", context_vars={"text": comment})
+            comment_summary_res = call_gemini("summary", context_vars={"text": comment})
+            comment_summary = comment_summary_res["text"]
+            for k in total_tokens_used:
+                total_tokens_used[k] += comment_summary_res["token_usage"].get(k, 0)
+
             response = {
                 "title": title,
                 "article_summary": summary_meta,
-                "comment_summary": comment_summary
+                "comment_summary": comment_summary,
+                "tokens_used": total_tokens_used
             }
         else:
             response = {
                 "title": title,
-                "summary": summary_meta
+                "summary": summary_meta,
+                "tokens_used": total_tokens_used
             }
 
         return jsonify(response)
