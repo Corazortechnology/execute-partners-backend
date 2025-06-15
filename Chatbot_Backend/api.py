@@ -114,10 +114,10 @@ async def summarize_article():
         title = article.get("title", "") if article else ""
         meta_desc = article.get("meta", {}).get("description", "") if article else ""
 
-        summary_meta = await call_gemini("summary", context_vars={"text": title + meta_desc}) if meta_desc else ""
+        summary_meta = call_gemini("summary", context_vars={"text": title + meta_desc}) if meta_desc else ""
 
         if comment:
-            comment_summary = await call_gemini("summary", context_vars={"text": comment})
+            comment_summary = call_gemini("summary", context_vars={"text": comment})
             response = {
                 "title": title,
                 "article_summary": summary_meta,
