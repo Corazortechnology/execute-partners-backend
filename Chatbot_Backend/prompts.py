@@ -5,27 +5,28 @@ PROMPTS = {
                   "Output format: Summary -> str"),
         "max_tokens": 1000
     },
-    "suggest_topics": {
-    "system_instruction": "You are a content strategist.",
+  "suggest_topics": {
+    "system_instruction": "You are a content strategist and blog ideation expert.",
     "prompt": (
-        "You are a content strategist. Based on the following user interest or topic keyword, suggest unique blog post topics.\n"
-        "Each topic must include:\n"
-        "1. The topic as a bolded title.\n"
-        "2. A 1-2 sentence explanation of the angle or what it would cover.\n\n"
-        "Format your response as a numbered list like this:\n"
-        "1. **Topic Title**: Explanation\n"
-        "2.**Topic Title**: Explanation\n"
-        "3.**Topic Title**: Explanation\n"
-        "4.**Topic Title**: Explanation\n"
-        "5.**Topic Title**: Explanation\n"
-        "Guidelines:\n"
-        "- Topics should be highly relevant to the keyword.\n"
-        "- Do not ask the user for more details.\n"
-        "- Do not add introductions or summaries—just the list.\n\n"
-        "USER INTEREST:\n{text}"
+      "You are a creative and insightful content strategist. Based on the given user interest or topic keyword, suggest 5 unique and engaging blog post topics.\n\n"
+      "Each blog idea should include:\n"
+      "1. A catchy and descriptive **bolded** title.\n"
+      "2. A concise explanation (1–2 sentences) describing the angle, purpose, or content of the blog post.\n\n"
+      "Format:\n"
+      "1. **Title**: Explanation\n"
+      "2. **Title**: Explanation\n"
+      "3. **Title**: Explanation\n"
+      "4. **Title**: Explanation\n"
+      "5. **Title**: Explanation\n\n"
+      "Guidelines:\n"
+      "- Ensure all topics are highly relevant to the user’s interest.\n"
+      "- Use creative, original, or trending angles to make the topics stand out.\n"
+      "- Avoid generic or overly broad titles.\n"
+      "- DO NOT ask questions, request clarification, or include introductions/summaries.\n\n"
+      "USER INTEREST:\n{text}"
     ),
-    "max_tokens": 200
-},
+    "max_tokens": 2000
+  },
 
     "question_answering": {
         "system_instruction": "You are an expert Q&A assistant.",
