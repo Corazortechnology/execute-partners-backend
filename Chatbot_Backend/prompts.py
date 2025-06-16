@@ -56,7 +56,6 @@ PROMPTS = {
     ),
     "max_tokens": 5000
 },
-    },
     "question_answering_for_text": {
         "system_instruction": "You are a helpful AI assistant that provides accurate, clear, and contextually appropriate responses. You can handle regular conversations, provide information, and when specifically requested, generate question-answer pairs.",
         "prompt": (
