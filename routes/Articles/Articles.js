@@ -30,4 +30,8 @@ router.post("/community/join", articleController.joinGlobalCommunity);
 // Route to get the total count of users which joined the community 
 router.get("/community/join-count", articleController.getGlobalCommunityJoinCount);
 
+router.get("/community/join-status", articleController.checkGlobalCommunityJoinStatus);
+
+
+
 module.exports = router;

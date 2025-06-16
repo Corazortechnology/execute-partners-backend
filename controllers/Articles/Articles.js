@@ -742,3 +742,24 @@ exports.getGlobalCommunityJoinCount = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+// To check if user has already joined the community
+exports.checkGlobalCommunityJoinStatus = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const community = await Community.findOne().select("joinedUsers");
+
+    if (!community) {
+      return res.status(200).json({ joined: false });
+    }
+
+    const hasJoined = community.joinedUsers.includes(userId);
+
+    res.status(200).json({ joined: hasJoined });
+  } catch (error) {
+    console.error("Error checking join status: ", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
