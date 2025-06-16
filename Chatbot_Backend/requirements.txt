@@ -6,3 +6,5 @@ uvicorn
 flask-cors
 requests
 pymongo
+quart
+motor
