@@ -76,8 +76,8 @@ def detect_intent(msg: str):
 
     if "summary" in msg_lower or "summarize" in msg_lower:
         return "summary"
-    if "topic" in msg_lower or "suggest" in msg_lower:
-        return "topic"
+    # if "topic" in msg_lower or "suggest" in msg_lower:
+    #     return "topic"
     if any(x in msg_lower for x in ["stop", "cancel", "exit"]):
         return "cancel"
     if any(x in msg_lower for x in ["continue", "go on", "resume"]):
@@ -106,8 +106,8 @@ def get_bot_response(user_msg: str, text: str, writer_module: ArticleWriterModul
 
         if intent == "summary":
             return call_gemini("summary", context_vars={"text": text}) + "\n\n(You're currently in the middle of writing an article. You can continue when ready.)"
-        elif intent == "topic":
-            return call_gemini("suggest_topics", context_vars={"text": text}) + "\n\n(You're currently in the middle of writing an article. You can continue when ready.)"
+        # elif intent == "topic":
+        #     return call_gemini("suggest_topics", context_vars={"text": text}) + "\n\n(You're currently in the middle of writing an article. You can continue when ready.)"
         elif intent == "qa":
             return call_gemini("question_answering", context_vars={"text": text, "question": interrupted_msg}) + "\n\n(You're currently in the middle of writing an article. You can continue when ready.)"
         elif intent == "cancel":
