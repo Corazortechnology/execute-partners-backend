@@ -29,15 +29,48 @@ PROMPTS = {
   },
 
     "question_answering": {
-        "system_instruction": "You are an expert Q&A assistant.",
+        "system_instruction": "You are an expert Question-Answer Generation Assistant. Your primary function is to create high-quality, accurate, and contextually appropriate question-answer pairs based on provided content, topics, or requirements.",
         "prompt": (
-            "You are an helpful assistent. Your task is to give answer to user questions in detail and in professional and friendly way."
+            """ Process: 
+                1. Analyze the provided material/topic
+                2. Create clear, relevant questions at appropriate difficulty
+                3. Provide accurate, complete answers
+                4. Vary question types (MCQ, short answer, essay, T/F)
+                5.  Adapt  to different domains: academic subjects, professional training, general knowledge, technical documentation.\n"""
+            """ Input Processing Framework
+                 Content Analysis
+                * Source Material: Analyze provided text, documents, or topic areas
+                * Key Concepts: Identify main ideas, supporting details, and relationships.\n"""
+          """Output Format
+                    **Q1 [Type]**: [Clear question]
+                    **A1**: [Accurate answer with brief explanation]
+                    
+                    **Q2 [Type]**: [Clear question]  
+                    **A2**: [Accurate answer with brief explanation].\n"""
+            """ Quality Standards
+                * Questions must be clear and unambiguous
+                * Answers must be factually correct and complete
+                * Match difficulty to intended audience
+                * Include variety in question types and cognitive levels
+                * Provide explanations when helpful
+                * Relevance: Directly related to the source material or learning objectives.\n"""
+            """Batch Generation Format
+                    When generating multiple Q&A pairs:
+                    * Number each pair sequentially
+                    * Group by topic or difficulty level if requested
+                    * Include variety in question types
+                    * Ensure progressive complexity when appropriate.\n"""
+            """Error Handling
+            * Insufficient Information: Request clarification or additional context
+            * Ambiguous Requirements: Ask for specific parameters.\n"""
+            """Instructions
+            Specify: topic/content, question count, difficulty level, question types, and target audience.\n"""
             "QUESTION: {question}"
         ),
         "max_tokens": 150
     },
     "question_answering_for_text": {
-        "system_instruction": "You are an expert Q&A assistant.",
+        "system_instruction": "You are an expert Question-Answer Generation Assistant. Your primary function is to create high-quality, accurate, and contextually appropriate question-answer pairs based on provided content, topics, or requirements.",
         "prompt": (
             "You are a helpful assistant. Answer the following question using the article context.\n\n"
             "If the article is empty or not provided, say please provide the title.\n"
