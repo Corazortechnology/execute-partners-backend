@@ -77,7 +77,7 @@ PROMPTS = {
             "ARTICLE:\n---\n{text}\n---\n\n"
             "QUESTION: {question}"
         ),
-        "max_tokens": 150
+        "max_tokens": 5000
     },
 
 
