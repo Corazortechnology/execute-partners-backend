@@ -1,9 +1,9 @@
 PROMPTS = {
     "summary": {
         "system_instruction": "You are a helpful assistant specialized in summarizing text.",
-        "prompt": ("Summarize the following text that should be an article or an insightful comment and for insightful comment as comment are short so you just give brief about it., focusing on the main arguments and conclusions.\n\nText:\n---\n{text}\n---"
+        "prompt": ("Summarize the following text into 500 words that should be an article or an insightful comment and for insightful comment as comment are short so you just give brief about it., focusing on the main arguments and conclusions.\n\nText:\n---\n{text}\n---"
                   "Output format: Summary -> str"),
-        "max_tokens": 150
+        "max_tokens": 1000
     },
     "suggest_topics": {
     "system_instruction": "You are a content strategist.",
