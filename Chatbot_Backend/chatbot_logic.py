@@ -51,13 +51,13 @@ class ArticleWriterModule:
         titles = call_gemini("generate_titles", context_vars={"description": self.context["description"]})
         self.context["titles"] = titles
         self.stage = "awaiting_title_choice"
-        return f"Here are 5 title options. Please copy and paste the one you'd like to use:\n\n{titles}"
+        return f"{titles}"
 
     def _generate_blog_ideas(self):
         ideas = call_gemini("generate_blog_ideas", context_vars=self.context)
         self.context["ideas"] = ideas
         self.stage = "awaiting_blog_choice"
-        return f"Excellent. Now, here are 5 blog ideas based on that title. Please pick one to develop:\n\n{ideas}"
+        return f"{ideas}"
 
     def _generate_article(self):
         context_vars = {
@@ -66,7 +66,7 @@ class ArticleWriterModule:
             "description": self.context.get("description", "")
         }
         article = call_gemini("generate_article", context_vars=context_vars)
-        final_response = f"**Here is your complete article:**\n\n---\n\n{article}"
+        final_response = f"{article}"
         self.reset()
         return final_response
 
