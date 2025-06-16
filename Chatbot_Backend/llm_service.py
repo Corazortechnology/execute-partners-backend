@@ -25,12 +25,7 @@ def call_gemini(prompt_key, context_vars=None, max_tok=None):
         output_tokens = len(response.text.strip().split())
 
         return {
-            "text": response.text.strip(),
-            "token_usage": {
-                "input_tokens": input_tokens,
-                "output_tokens": output_tokens,
-                "total_tokens": input_tokens + output_tokens
-            }
+            "text": response.text.strip()
         }
 
     except Exception as e:
