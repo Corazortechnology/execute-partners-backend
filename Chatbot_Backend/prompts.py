@@ -116,6 +116,8 @@ Format your response as follows:
 
 ## Meta Description: [Compelling 150-160 character meta description]
 
+## Meta Keywords : [Comma Seperated]
+
 ## Keywords: [Relevant primary and secondary keywords, separated by commas]
 
 ## Tags:[Comma Seperated]
