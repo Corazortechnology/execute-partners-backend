@@ -113,17 +113,11 @@ Follow these instructions carefully:
 
 Format your response as follows:
 ## Title: [Optimized SEO Title]
-
-## Meta Description: [Compelling 150-160 character meta description]
-
-## Meta Keywords : [Comma Seperated]
-
-## Keywords: [Relevant primary and secondary keywords, separated by commas]
-
-## Tags:[Comma Seperated]
-
 ## Article Content:
 [Full article content with proper markdown formatting]
+## Keywords/Tags: [Relevant primary and secondary keywords, separated by commas]
+## Meta Description: [Compelling 150-160 character meta description]
+## Meta Keywords : [Comma Seperated]
 ---
 TITLE: {title}
 CHOSEN BLOG IDEA: {blog_idea}
