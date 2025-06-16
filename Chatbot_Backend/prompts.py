@@ -67,7 +67,7 @@ PROMPTS = {
             Specify: topic/content, question count, difficulty level, question types, and target audience.\n"""
             "QUESTION: {question}"
         ),
-        "max_tokens": 150
+        "max_tokens": 5000
     },
     "question_answering_for_text": {
         "system_instruction": "You are an expert Question-Answer Generation Assistant. Your primary function is to create high-quality, accurate, and contextually appropriate question-answer pairs based on provided content, topics, or requirements.",
