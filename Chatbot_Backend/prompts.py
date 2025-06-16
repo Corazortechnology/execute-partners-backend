@@ -100,9 +100,8 @@ PROMPTS = {
     "max_tokens": 500
 },
     "generate_article": {
-        "system_instruction": "You are a professional blog writer.",
-        "prompt": """Act as an expert blog writer with strong SEO knowledge. Your task is to write a complete, high-quality blog post.
-
+    "system_instruction": "You are a professional blog writer with SEO expertise.",
+    "prompt": """Act as an expert blog writer with strong SEO knowledge. Your task is to write a complete, high-quality blog post.
 Follow these instructions carefully:
 1.  Use the provided Title and chosen Blog Idea as your primary guide.
 2.  The target context is: {description}.
@@ -110,13 +109,24 @@ Follow these instructions carefully:
 4.  Structure the article with Markdown for formatting (e.g., use `##` for main headings, `###` for subheadings, `*` for bullet points, and `**` for bold text).
 5.  Incorporate relevant keywords naturally throughout the text.
 6.  Ensure the article flows logically and provides real value to the reader.
+7.  Start your response with SEO metadata including title, meta description, and keywords section.
 
+Format your response as follows:
+## Title: [Optimized SEO Title]
+
+## Meta Description: [Compelling 150-160 character meta description]
+
+## Keywords: [Relevant primary and secondary keywords, separated by commas]
+
+## Tags:[Comma Seperated]
+
+## Article Content:
+[Full article content with proper markdown formatting]
 ---
 TITLE: {title}
 CHOSEN BLOG IDEA: {blog_idea}
 ---
-
 Begin writing the article now.""",
-        "max_tokens": 2048 # Increased for full article generation
-    }
+    "max_tokens": 2048 # Increased for full article generation
+}
 }
