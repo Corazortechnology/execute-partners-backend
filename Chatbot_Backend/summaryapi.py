@@ -126,7 +126,8 @@ CORS(app,
                  "http://127.0.0.1:5173",
                  "http://localhost:3000", 
                  "http://127.0.0.1:3000",
-                 "https://www.executepartners.com"
+                 "https://www.executepartners.com",
+                 "https://execute-partners-community.vercel.app"
              ],
              "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
              "allow_headers": ["Content-Type", "Authorization", "X-Requested-With"],
