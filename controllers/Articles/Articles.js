@@ -380,7 +380,6 @@ exports.likeArticle = async (req, res) => {
         message: "Article unliked",
         claps: article.claps,
       });
-
     } else {
       // Like the article
       article.likes.push(userId);
@@ -396,13 +395,11 @@ exports.likeArticle = async (req, res) => {
         claps: article.claps,
       });
     }
-
   } catch (error) {
     console.error("Error in likeArticle:", error);
     res.status(500).json({ message: "Error processing like", error });
   }
 };
-
 
 // Add comment to article
 exports.addComment = async (req, res) => {
@@ -671,7 +668,7 @@ exports.addReply = async (req, res) => {
 
     // 3. Construct the reply
     const reply = {
-      user: req.user._id,
+      user: req.user.id,
       content,
       likes: [],
     };
@@ -762,4 +759,3 @@ exports.checkGlobalCommunityJoinStatus = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
