@@ -32,6 +32,9 @@ router.get("/community/join-count", articleController.getGlobalCommunityJoinCoun
 
 router.get("/community/join-status", articleController.checkGlobalCommunityJoinStatus);
 
+router.post("/community/leave", articleController.leaveGlobalCommunity);
+
+
 
 
 module.exports = router;

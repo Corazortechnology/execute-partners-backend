@@ -3,10 +3,27 @@ const jwt = require("jsonwebtoken");
 const User = require("../../models/Auth/User");
 
 const generateToken = (user) => {
-  return jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: "7d",
-  });
+  return jwt.sign(
+    {
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      phone: user.phone,
+      // role: user.role,
+      profile: user.profile,
+      description: user.description,
+      showEmail: user.showEmail,
+      showPhone: user.showPhone,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "7d",
+    }
+  );
 };
+
 
 // Signup Controller
 exports.signup = async (req, res) => {
@@ -72,12 +89,33 @@ exports.googleAuth = async (req, res) => {
 // ✅ Get User Profile (Protected)
 exports.getUserProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password");
-    if (!user) return res.status(404).json({ message: "User not found" });
- 
+    const requestedUserId = req.params.id || req.user.id;
+    const user = await User.findById(requestedUserId);
 
-    res.status(200).json({ user });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const isOwner = req.user.id === user._id.toString();
+
+    const userResponse = {
+      _id: user._id,
+      username: user.username,
+      description: user.description,
+      profile: user.profile,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+
+    if (isOwner || user.showEmail) {
+      userResponse.email = user.email;
+    }
+
+    if (isOwner || user.showPhone) {
+      userResponse.phone = user.phone;
+    }
+
+    res.status(200).json({ user: userResponse });
   } catch (error) {
+    console.error("Error fetching user profile:", error);
     res.status(500).json({ message: "Error fetching user profile", error });
   }
 };
@@ -90,5 +128,47 @@ exports.getAllUserProfile = async (req, res) => {
     res.status(200).json({ user });
   } catch (error) {
     res.status(500).json({ message: "Error fetching user profile", error });
+  }
+};
+
+// ✅ Update User Profile (with optional Cloudinary image upload)
+exports.updateUserProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { username, phone, description } = req.body;
+
+    const updateFields = {};
+    if (username !== undefined) updateFields.username = username;
+    if (phone !== undefined) updateFields.phone = phone;
+    if (description !== undefined) updateFields.description = description;
+
+    if (req.body.showEmail !== undefined) updateFields.showEmail = req.body.showEmail;
+    if (req.body.showPhone !== undefined) updateFields.showPhone = req.body.showPhone;
+
+    // ✅ Handle image file upload if present
+    if (req.file && req.file.path) {
+      updateFields.profile = req.file.path; // Cloudinary auto-generated URL
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: updateFields },
+      { new: true, runValidators: true }
+    ).select("-password");
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      message: "Profile updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error updating user profile:", error);
+    res.status(500).json({
+      message: "Failed to update profile",
+      error: error.message,
+    });
   }
 };

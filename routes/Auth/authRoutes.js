@@ -6,9 +6,11 @@ const {
   googleAuth,
   getUserProfile,
   getAllUserProfile,
+  updateUserProfile
 } = require("../../controllers/Auth/authController");
 const authMiddleware = require("../../middlewares/authMiddleware");
 const adminController = require("../../controllers/Auth/adminController");
+const uploadProfile = require("../../config/multerUser")
 
 const router = express.Router();
 
@@ -16,6 +18,7 @@ router.post("/signup", signup);
 router.post("/signin", signin);
 router.get("/profile", authMiddleware, getUserProfile);
 router.get("/AllUsers", getAllUserProfile);
+router.put("/profile", authMiddleware, uploadProfile.single("profile"), updateUserProfile);
 
 // Google OAuth Routes
 router.get(

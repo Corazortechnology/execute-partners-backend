@@ -35,7 +35,7 @@ exports.getAllArticles = async (req, res) => {
     if (category) query.category = category;
 
     const articles = await Article.find(query)
-      .populate("author", "username profile")
+      .populate("author")
       .sort("-publishedAt")
       .limit(limit * 1)
       .skip((page - 1) * limit)
@@ -759,3 +759,33 @@ exports.checkGlobalCommunityJoinStatus = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+// To leave the community
+exports.leaveGlobalCommunity = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const community = await Community.findOne();
+
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    if (!community.joinedUsers.includes(userId)) {
+      return res
+        .status(400)
+        .json({ message: "You are not a member of the community" });
+    }
+
+    community.joinedUsers = community.joinedUsers.filter(
+      (id) => id.toString() !== userId.toString()
+    );
+
+    await community.save();
+
+    res.status(200).json({ message: "Left the community successfully" });
+  } catch (error) {
+    console.error("Error leaving community: ", error);
+    res.status(500).json({ message: "Internal server error", error });
+  }
+};
+

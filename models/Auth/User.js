@@ -11,6 +11,22 @@ const UserSchema = new mongoose.Schema(
       enum: ["user", "admin", "superAdmin"],
       default: "user",
     },
+    phone: {
+      type: String,
+      required: false,
+      trim: true,
+    },
+    description: {
+      type: String,
+      required: false,
+      maxlength: 500,
+    },
+    profile: {
+      type: String, // Will store a URL or path to the profile photo
+      required: false,
+    },
+    showEmail: { type: Boolean, default: false },
+    showPhone: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
