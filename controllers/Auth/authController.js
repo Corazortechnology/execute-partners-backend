@@ -101,6 +101,8 @@ exports.getUserProfile = async (req, res) => {
       username: user.username,
       description: user.description,
       profile: user.profile,
+      showEmail: user.showEmail,
+      showPhone: user.showPhone,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };
