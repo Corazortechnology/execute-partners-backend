@@ -101,7 +101,6 @@
 
 # if __name__ == "__main__":
 #     app.run(host="0.0.0.0", port=8001, debug=True)
-
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from pymongo import MongoClient
@@ -200,59 +199,91 @@ def get_comment_content_by_id(db, comment_id):
 def summarize_article():
     try:
         if request.method == "OPTIONS":
-            return '',200
-        # Get and validate JSON data
+            return '', 200
         data = request.get_json()
         if not data:
             return jsonify({"error": "No JSON data provided"}), 400
-            
+
         article_id = data.get("article_id", "").strip()
         comment_id = data.get("comment_id", "").strip()
-        
-        print(f"Processing request - Article ID: {article_id}, Comment ID: {comment_id}")
-        
-        # Initialize response data
+        delete = data.get("delete", False)
+
         response_data = {}
-        
-        # Process article if article_id is provided
+
+        # --- Article summary logic ---
         if article_id:
             article = get_article_by_id(article_id)
-            if article:
-                title = article.get("title", "")
-                response_data["title"] = title
-                
-                meta_desc = article.get("meta", {}).get("description", "")
-                if meta_desc:
-                    print("Calling Gemini for article summary...")
-                    summary_meta = call_gemini("summary", context_vars={"text": title + " " + meta_desc})
-                    response_data["article_summary"] = summary_meta
-                else:
-                    response_data["article_summary"] = ""
+            if not article:
+                return jsonify({"error": f"Article with ID {article_id} not found."}), 404
+
+            title = article.get("title", "")
+            meta_desc = article.get("meta", {}).get("description", "")
+            response_data["title"] = title
+
+            # If delete=False and summary exists, return it
+            if not delete and article.get("summary"):
+                response_data["article_summary"] = article.get("summary")
+                response_data["message"] = "Article summary already exists."
             else:
-                response_data["title"] = ""
-                response_data["article_summary"] = ""
-        
-        # Process comment if comment_id is provided
+                # If delete=True, remove existing summary
+                if delete:
+                    mycol.update_one(
+                        {"_id": ObjectId(article_id)},
+                        {"$unset": {"summary": ""}}
+                    )
+                # Generate and save new summary
+                if meta_desc:
+                    summary_meta = call_gemini("summary", context_vars={"text": title + " " + meta_desc})
+                else:
+                    summary_meta = ""
+                mycol.update_one(
+                    {"_id": ObjectId(article_id)},
+                    {"$set": {"summary": summary_meta}}
+                )
+                response_data["article_summary"] = summary_meta
+                response_data["message"] = "Article summary regenerated and saved to database." if delete else "Article summary saved to database."
+
+        # --- Comment summary logic ---
         if comment_id:
             comment_content = get_comment_content_by_id(db, comment_id)
-            if comment_content:
-                print("Calling Gemini for comment summary...")
-                comment_summary = call_gemini("summary", context_vars={"text": comment_content})
-                response_data["comment_summary"] = comment_summary
-            else:
+            if not comment_content:
                 response_data["comment_summary"] = ""
-        
-        # Ensure we always have a title field
-        if "title" not in response_data:
-            response_data["title"] = ""
-        
-        # Legacy compatibility - add 'summary' field if only article was processed
-        if "article_summary" in response_data and "comment_summary" not in response_data:
-            response_data["summary"] = response_data["article_summary"]
-        
-        print(f"Returning response: {response_data}")
+                response_data["comment_message"] = "Comment not found."
+            else:
+                # Find the article containing this comment
+                article_with_comment = db.articles.find_one({"comments._id": ObjectId(comment_id)})
+                if not article_with_comment:
+                    response_data["comment_summary"] = ""
+                    response_data["comment_message"] = "Comment's article not found."
+                else:
+                    # Find the comment object
+                    comment_obj = next((c for c in article_with_comment["comments"] if c["_id"] == ObjectId(comment_id)), None)
+                    if not comment_obj:
+                        response_data["comment_summary"] = ""
+                        response_data["comment_message"] = "Comment object not found."
+                    else:
+                        # If delete=False and summary exists, return it
+                        if not delete and comment_obj.get("summary"):
+                            response_data["comment_summary"] = comment_obj.get("summary")
+                            response_data["comment_message"] = "Comment summary already exists."
+                        else:
+                            # If delete=True, remove existing summary
+                            if delete:
+                                db.articles.update_one(
+                                    {"comments._id": ObjectId(comment_id)},
+                                    {"$unset": {"comments.$.summary": ""}}
+                                )
+                            # Generate and save new summary
+                            comment_summary = call_gemini("summary", context_vars={"text": comment_content})
+                            db.articles.update_one(
+                                {"comments._id": ObjectId(comment_id)},
+                                {"$set": {"comments.$.summary": comment_summary}}
+                            )
+                            response_data["comment_summary"] = comment_summary
+                            response_data["comment_message"] = "Comment summary regenerated and saved to database." if delete else "Comment summary saved to database."
+
         return jsonify(response_data), 200
-        
+
     except Exception as e:
         print(f"Error in summarize_article: {str(e)}")
         import traceback
