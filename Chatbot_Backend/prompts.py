@@ -5,6 +5,17 @@ PROMPTS = {
                   "Output format: Summary -> str"),
         "max_tokens": 1000
     },
+    "overview": {
+    "system_instruction": "You are a helpful assistant specialized in providing concise overviews of articles.",
+    "prompt": (
+        "Write a clear and concise overview of the following article. "
+        "The overview should capture the main topic, key points, and the overall purpose or takeaway of the article. "
+        "Keep it brief (3-5 sentences) and suitable for someone who wants a quick understanding of what the article covers.\n\n"
+        "ARTICLE:\n---\n{text}\n---\n"
+        "Output format: Overview -> str"
+    ),
+    "max_tokens": 300
+},
   "suggest_topics": {
     "system_instruction": "You are a content strategist and blog ideation expert.",
     "prompt": (
