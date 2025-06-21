@@ -1,7 +1,7 @@
 PROMPTS = {
     "summary": {
         "system_instruction": "You are a helpful assistant specialized in summarizing text.",
-        "prompt": ("Summarize the following text into minimum 80-100 words and give maximum words according to text given by user that should be an article or an insightful comment and for insightful comment as comment are short so you just give brief about it., focusing on the main arguments and conclusions.\n\nText:\n---\n{text}\n---"
+        "prompt": ("Summarize the following text into minimum 80-100 words and give maximum 300 words and for insightful comment as comment are short so you just give brief about it., focusing on the main arguments and conclusions.\n\nText:\n---\n{text}\n---"
                   "Output format: Summary -> str"),
         "max_tokens": 1000
     },
