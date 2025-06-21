@@ -5,6 +5,19 @@ PROMPTS = {
                   "Output format: Summary -> str"),
         "max_tokens": 1000
     },
+    "category_title_generation":{
+        "system_instruction":"You are a helpful assistant specialized in generating SEO-optimized titles.",
+        "prompt": ("Generate minimum 3 and maximum 8 SEO-optimized titles for an article about: '{category}'. "
+                  "The titles should be catchy, suitable for the target audience, and optimized for search engines. "
+                  "Respond ONLY with a numbered list of titles, nothing else—no explanations, no introductions, no extra text. "
+                  "Format:\n"
+                  "1. Title One\n"
+                  "2. Title Two\n"
+                  "3. Title Three\n"
+                  "4. Title Four\n"
+                  "5. Title Five"),
+        "max_tokens": 200
+    },
     "overview": {
     "system_instruction": "You are a helpful assistant specialized in providing concise overviews of articles.",
     "prompt": (
