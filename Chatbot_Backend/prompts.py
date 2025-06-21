@@ -4,6 +4,17 @@ PROMPTS = {
         "prompt": "Summarize the following text that should be an article or an insightful comment in 3–5 concise bullet points and for insightful comment as comment are short so you just give brief about it., focusing on the main arguments and conclusions.\n\nText:\n---\n{text}\n---",
         "max_tokens": 150
     },
+    "overview": {
+    "system_instruction": "You are a helpful assistant specialized in providing concise overviews of articles.",
+    "prompt": (
+        "Write a clear and concise overview of the following article. "
+        "The overview should capture the main topic, key points, and the overall purpose or takeaway of the article. "
+        "Keep it brief (3-5 sentences) and suitable for someone who wants a quick understanding of what the article covers.\n\n"
+        "ARTICLE:\n---\n{text}\n---\n"
+        "Output format: Overview -> str"
+    ),
+    "max_tokens": 300
+},
     "suggest_topics": {
     "system_instruction": "You are a content strategist.",
     "prompt": (
