@@ -224,7 +224,7 @@ def summarize_article():
             if not delete and article.get("summary") and article.get("overview"):
                 response_data["article_summary"] = article.get("summary")
                 response_data['article_overview'] = article.get("overview", "")
-                response_data["message"] = "Article summary already exists."
+                response_data["message"] = "Article summary and overview already exists."
             else:
                 # If delete=True, remove existing summary
                 if delete:
