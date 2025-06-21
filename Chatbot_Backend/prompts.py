@@ -25,7 +25,7 @@ PROMPTS = {
         "The overview should capture the main topic, key points, and the overall purpose or takeaway of the article. "
         "Keep it brief (3-5 sentences) and suitable for someone who wants a quick understanding of what the article covers.\n\n"
         "ARTICLE:\n---\n{text}\n---\n"
-        "Output format: Overview -> str"
+        "Output format: Overview by AI -> str"
     ),
     "max_tokens": 300
 },
