@@ -221,7 +221,7 @@ def summarize_article():
             response_data["title"] = title
 
             # If delete=False and summary exists, return it
-            if not delete and article.get("summary"):
+            if not delete and article.get("summary") and article.get("overview"):
                 response_data["article_summary"] = article.get("summary")
                 response_data['article_overview'] = article.get("overview", "")
                 response_data["message"] = "Article summary already exists."
@@ -242,8 +242,8 @@ def summarize_article():
                     overview = ""
                 mycol.update_one(
                     {"_id": ObjectId(article_id)},
-                    {"$set": {"summary": summary_meta,
-                             "overview": overview}}}}
+                    {"$set": {"summary": summary_meta, 
+                              "overview": overview}},
                 )
                 response_data["article_summary"] = summary_meta
                 response_data['article_overview'] = overview
