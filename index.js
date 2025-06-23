@@ -48,7 +48,13 @@ const app = express();
 const http = require("http");
 const socketIo = require("socket.io");
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = socketIo(server, {
+  cors: {
+    origin: "*", // or specific frontend domain
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+});
 
 // Set up socket.io for real time communication
 let users = {}; // To store the connected users

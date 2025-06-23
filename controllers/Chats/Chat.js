@@ -10,7 +10,7 @@ const getChatHistory = async (req, res) => {
             { sender: user1Id, receiver: user2Id},
             { sender: user2Id, receiver: user1Id},
         ],
-    }).sort({ timestamp: true }) // Sort by timestamp to get the chronological order of messages
+    }).sort({ timestamp: 1 }) 
 
     res.status(200).json({ chatHistory });
   } catch (error) {
