@@ -114,6 +114,11 @@ exports.getUserProfile = async (req, res) => {
       userResponse.phone = user.phone;
     }
 
+     if (isOwner) {
+      userResponse.subscriptions = user.subscriptions;
+      userResponse.subscribers = user.subscribers;
+    }
+
     res.status(200).json({ user: userResponse });
   } catch (error) {
     console.error("Error fetching user profile:", error);
@@ -205,14 +210,9 @@ exports.subscribeToUser = async (req, res) => {
       currentUser.subscriptions.push(targetUserId);
       targetUser.subscribers.push(currentUserId);
 
-      // console.log("Before Save - CurrentUser.subscriptions:", currentUser.subscriptions);
-      // console.log("Before Save - TargetUser.subscribers:", targetUser.subscribers);
-
       await currentUser.save();
       await targetUser.save();
 
-      // console.log("After Save - CurrentUser.subscriptions:", currentUser.subscriptions);
-      // console.log("After Save - TargetUser.subscribers:", targetUser.subscribers);
     } else {
       console.log("Already subscribed, skipping DB write.");
     }
