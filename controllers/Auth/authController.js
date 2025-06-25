@@ -15,7 +15,7 @@ const generateToken = (user) => {
       showEmail: user.showEmail,
       showPhone: user.showPhone,
       createdAt: user.createdAt,
-      updatedAt: user.updatedAt
+      updatedAt: user.updatedAt,
     },
     process.env.JWT_SECRET,
     {
@@ -23,7 +23,6 @@ const generateToken = (user) => {
     }
   );
 };
-
 
 // Signup Controller
 exports.signup = async (req, res) => {
@@ -52,12 +51,12 @@ exports.signin = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-  
+
     if (!user || !user.password)
       return res.status(400).json({ message: "Invalid credentials" });
 
-    const isMatch = await bcrypt.compare(password,user.password);
-    console.log(isMatch)
+    const isMatch = await bcrypt.compare(password, user.password);
+    console.log(isMatch);
     if (!isMatch)
       return res.status(400).json({ message: "Invalid credentials" });
 
@@ -144,8 +143,10 @@ exports.updateUserProfile = async (req, res) => {
     if (phone !== undefined) updateFields.phone = phone;
     if (description !== undefined) updateFields.description = description;
 
-    if (req.body.showEmail !== undefined) updateFields.showEmail = req.body.showEmail;
-    if (req.body.showPhone !== undefined) updateFields.showPhone = req.body.showPhone;
+    if (req.body.showEmail !== undefined)
+      updateFields.showEmail = req.body.showEmail;
+    if (req.body.showPhone !== undefined)
+      updateFields.showPhone = req.body.showPhone;
 
     // ✅ Handle image file upload if present
     if (req.file && req.file.path) {
@@ -172,5 +173,83 @@ exports.updateUserProfile = async (req, res) => {
       message: "Failed to update profile",
       error: error.message,
     });
+  }
+};
+
+// Subscribe to a user
+exports.subscribeToUser = async (req, res) => {
+  try {
+    // console.log("SUBSCRIBE HANDLER HIT");
+
+    const currentUserId = req.user.id;
+    const { targetUserId } = req.body;
+
+    if (!targetUserId || currentUserId === targetUserId) {
+      console.log("Invalid subscription request.");
+      return res.status(400).json({ message: "Invalid subscription request" });
+    }
+
+    const currentUser = await User.findById(currentUserId);
+    const targetUser = await User.findById(targetUserId);
+
+    if (!currentUser || !targetUser) {
+      console.log("User not found");
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!currentUser.subscriptions) currentUser.subscriptions = [];
+    if (!targetUser.subscribers) targetUser.subscribers = [];
+
+    const isAlreadySubscribed = currentUser.subscriptions.includes(targetUserId);
+    if (!isAlreadySubscribed) {
+      currentUser.subscriptions.push(targetUserId);
+      targetUser.subscribers.push(currentUserId);
+
+      // console.log("Before Save - CurrentUser.subscriptions:", currentUser.subscriptions);
+      // console.log("Before Save - TargetUser.subscribers:", targetUser.subscribers);
+
+      await currentUser.save();
+      await targetUser.save();
+
+      // console.log("After Save - CurrentUser.subscriptions:", currentUser.subscriptions);
+      // console.log("After Save - TargetUser.subscribers:", targetUser.subscribers);
+    } else {
+      console.log("Already subscribed, skipping DB write.");
+    }
+
+    return res.status(200).json({ message: "Subscribed successfully" });
+  } catch (error) {
+    console.error("Subscribe error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Unsubscribe from a user
+exports.unsubscribeFromUser = async (req, res) => {
+  try {
+    const currentUserId = req.user.id;
+    const { targetUserId } = req.body;
+
+    const currentUser = await User.findById(currentUserId);
+    const targetUser = await User.findById(targetUserId);
+
+    if (!currentUser || !targetUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    currentUser.subscriptions = currentUser.subscriptions.filter(
+      (id) => id.toString() !== targetUserId
+    );
+    targetUser.subscribers = targetUser.subscribers.filter(
+      (id) => id.toString() !== currentUserId
+    );
+
+    await currentUser.save();
+    await targetUser.save();
+
+    return res.status(200).json({ message: "Unsubscribed successfully" });
+  } catch (error) {
+    console.error("Unsubscribe error:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };

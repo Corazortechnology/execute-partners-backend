@@ -6,7 +6,9 @@ const {
   googleAuth,
   getUserProfile,
   getAllUserProfile,
-  updateUserProfile
+  updateUserProfile,
+  subscribeToUser,
+  unsubscribeFromUser
 } = require("../../controllers/Auth/authController");
 const authMiddleware = require("../../middlewares/authMiddleware");
 const adminController = require("../../controllers/Auth/adminController");
@@ -19,6 +21,9 @@ router.post("/signin", signin);
 router.get("/profile", authMiddleware, getUserProfile);
 router.get("/AllUsers", getAllUserProfile);
 router.put("/profile", authMiddleware, uploadProfile.single("profile"), updateUserProfile);
+
+router.post("/subscribe", authMiddleware, subscribeToUser);
+router.post("/unsubscribe", authMiddleware, unsubscribeFromUser);
 
 // Google OAuth Routes
 router.get(
