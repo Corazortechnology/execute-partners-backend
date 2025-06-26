@@ -24,6 +24,23 @@ const generateToken = (user) => {
   );
 };
 
+// ✅ Get a user by ID (public or limited exposure)
+exports.getUserById = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId).select("username profile description"); // Limit exposure
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({ user });
+  } catch (error) {
+    console.error("Error fetching user by ID:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 // Signup Controller
 exports.signup = async (req, res) => {
   try {

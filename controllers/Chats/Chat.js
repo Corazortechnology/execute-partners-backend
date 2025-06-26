@@ -109,10 +109,29 @@ const markMessagesRead = async (req, res) => {
   }
 };
 
+// Get unread count for specific conversation
+const getUnreadCount = async (req, res) => {
+  const { userId, partnerId } = req.params;
+
+  try {
+    const count = await Chat.countDocuments({
+      sender: partnerId,
+      receiver: userId,
+      isRead: false
+    });
+    
+    res.status(200).json({ count });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching unread count" });
+  }
+};
+
 // Export
 module.exports = {
   getChatHistory,
   getInboxSummary,
-  markMessagesRead
+  markMessagesRead,
+  getUnreadCount
 };
 

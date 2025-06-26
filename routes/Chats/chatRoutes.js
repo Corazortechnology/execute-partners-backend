@@ -9,4 +9,6 @@ router.get('/inbox/:userId', chatController.getInboxSummary);
 
 router.get('/markRead', chatController.markMessagesRead);
 
+router.get('/unread-count/:userId/:partnerId', chatController.getUnreadCount);
+
 module.exports = router;

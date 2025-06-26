@@ -789,3 +789,33 @@ exports.leaveGlobalCommunity = async (req, res) => {
   }
 };
 
+// Get articles written by a specific user
+exports.getArticlesByUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { page = 1, limit = 10 } = req.query;
+
+    const query = { author: userId };
+
+    const articles = await Article.find(query)
+      .populate("author", "username profile")
+      .sort("-publishedAt")
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .exec();
+
+    const totalCount = await Article.countDocuments(query);
+
+    res.status(200).json({
+      message: `Articles by user ${userId} retrieved successfully`,
+      data: articles,
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: parseInt(page),
+    });
+  } catch (error) {
+    console.error("Error fetching user's articles:", error);
+    res.status(500).json({ message: "Error retrieving user articles", error });
+  }
+};
+
+

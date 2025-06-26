@@ -58,6 +58,7 @@ const io = socketIo(server, {
 
 // Set up socket.io for real time communication
 let users = {}; // To store the connected users
+let unreadCounts = {};
 
 app.use(
   cors({
@@ -169,6 +170,10 @@ io.on("connection", (socket) => {
   socket.on("register", (userId) => {
     console.log(`Registering user: ${userId} to socket: ${socket.id}`);
     users[userId] = socket.id;
+
+     if (unreadCounts[userId]) {
+      io.to(socket.id).emit("unread_count", unreadCounts[userId]);
+    }
   });
 
   // Listen for incoming messages
@@ -177,23 +182,56 @@ io.on("connection", (socket) => {
     
     try {
       const { senderId, receiverId, message } = data;
-      const chat = new Chat({ sender: senderId, receiver: receiverId, message });
+      const chat = new Chat({ sender: senderId, receiver: receiverId, message, isRead: false });
       await chat.save();
       console.log("Message saved to DB");
 
       // Emit to receiver if connected
+      // Update unread count
+      unreadCounts[receiverId] = (unreadCounts[receiverId] || 0) + 1;
+      
+      // Notify receiver
       if (users[receiverId]) {
         io.to(users[receiverId]).emit("receive_message", {
           senderId,
           message,
-          timestamp: chat.timestamp
+          timestamp: chat.timestamp,
+          isRead: false
         });
-        console.log(`Message forwarded to ${receiverId}`);
-      } else {
-        console.log(`Receiver ${receiverId} not connected`);
+        
+        // Update unread count in real-time
+        io.to(users[receiverId]).emit("unread_count", unreadCounts[receiverId]);
+      }
+      
+      // Also send to sender (but mark as read)
+      if (users[senderId]) {
+        io.to(users[senderId]).emit("receive_message", {
+          senderId,
+          message,
+          timestamp: chat.timestamp,
+          isRead: true
+        });
       }
     } catch (error) {
       console.error("Error handling message:", error);
+    }
+  });
+
+  // Mark messages as read
+  socket.on("mark_read", async ({ senderId, receiverId }) => {
+    try {
+      await Chat.updateMany(
+        { sender: senderId, receiver: receiverId, isRead: false },
+        { $set: { isRead: true } }
+      );
+      
+      // Update unread count
+      if (unreadCounts[receiverId]) {
+        unreadCounts[receiverId] = Math.max(0, unreadCounts[receiverId] - 1);
+        io.to(users[receiverId]).emit("unread_count", unreadCounts[receiverId]);
+      }
+    } catch (error) {
+      console.error("Error marking messages read:", error);
     }
   });
 

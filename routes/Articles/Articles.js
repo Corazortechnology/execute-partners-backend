@@ -34,7 +34,7 @@ router.get("/community/join-status", articleController.checkGlobalCommunityJoinS
 
 router.post("/community/leave", articleController.leaveGlobalCommunity);
 
-
+router.get("/user/:userId", articleController.getArticlesByUser);
 
 
 module.exports = router;
