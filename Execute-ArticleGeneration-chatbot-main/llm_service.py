@@ -116,8 +116,10 @@ def call_gemini(conversation_id, prompt_key, context_vars=None, max_tok=None, us
 
         return response_text
 
+    except SomeRateLimitError:  # Replace with actual error class, e.g., requests.exceptions.HTTPError
+        return "⚠️ Rate limit reached. Please wait a moment and try again."
     except Exception as e:
-        return f"⚠️ An error occurred with the Gemini API: {e}"
+        return f"⚠️ An error occurred with the AI: {e}"
 def close_conversation(conversation_id):
     """
     Closes a conversation and clears its history.
