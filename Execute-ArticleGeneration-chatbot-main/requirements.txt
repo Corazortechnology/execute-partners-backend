@@ -1,0 +1,8 @@
+google-generativeai
+python-dotenv
+flask
+fastapi
+uvicorn
+flask-cors
+requests
+pymongo
