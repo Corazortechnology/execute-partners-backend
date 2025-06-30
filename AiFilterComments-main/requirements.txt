@@ -1,0 +1,6 @@
+flask
+fastapi
+uvicorn
+transformers
+torch
+python-dotenv
