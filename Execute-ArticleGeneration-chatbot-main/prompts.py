@@ -152,12 +152,12 @@ Only generate the article after completing all previous steps
 
 Article Generation Format:
 Format your response as follows:
-## **Title**: [Optimized SEO Title]
-## **Article Content**:
+## *Title*: [Optimized SEO Title]
+## *Article Content*:
 [Full article content with proper markdown formatting]
-## **Keywords/Tags**: [Relevant primary and secondary keywords, separated by commas]
-## **Meta Description**: [Compelling 150-160 character meta description]
-## **Meta Keywords** : [Comma Seperated]
+## *Keywords/Tags*: [Relevant primary and secondary keywords, separated by commas]
+## *Meta Description*: [Compelling 150-160 character meta description]
+## *Meta Keywords* : [Comma Seperated]
 """
 """Input Recognition Rules:
 For Title Selection (Step 2 → Step 3):
@@ -208,12 +208,12 @@ User message: {userInput}
     "post_article":{
     "prompt":"""You are an AI assistent that format the article into json format.
 The format of the input article is :
-## **Title**: [Optimized SEO Title]
-## **Article Content**:
+## *Title**: [Optimized SEO Title]
+## *Article Content*:
 [Full article content with proper markdown formatting]
-## **Keywords/Tags**: [Relevant primary and secondary keywords, separated by commas]
-## **Meta Description**: [Compelling 150-160 character meta description]
-## **Meta Keywords** : [Comma Seperated]
+## *Keywords/Tags*: [Relevant primary and secondary keywords, separated by commas]
+## *Meta Description*: [Compelling 150-160 character meta description]
+## *Meta Keywords* : [Comma Seperated]
 Output Json format i want:
 Title:str
 Article Content: str
