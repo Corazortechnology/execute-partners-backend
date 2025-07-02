@@ -229,10 +229,9 @@ def summarize_article():
                 # If delete=True, remove existing summary
                 if delete:
                     mycol.update_one(
-                        {"_id": ObjectId(article_id)},
-                        {"$unset": {"summary": ""}},
-                        {"$unset": {"overview": ""}}
-                    )
+                            {"_id": ObjectId(article_id)},
+                            {"$unset": {"summary": "", "overview": ""}}
+                        )
                 # Generate and save new summary
                 if meta_desc:
                     summary_meta = call_gemini("summary", context_vars={"text": title + " " + meta_desc})
@@ -241,10 +240,9 @@ def summarize_article():
                     summary_meta = ""
                     overview = ""
                 mycol.update_one(
-                    {"_id": ObjectId(article_id)},
-                    {"$set": {"summary": summary_meta, 
-                              "overview": overview}},
-                )
+                        {"_id": ObjectId(article_id)},
+                        {"$unset": {"summary": "", "overview": ""}}
+                    )
                 response_data["article_summary"] = summary_meta
                 response_data['article_overview'] = overview
                 response_data["message"] = "Article summary regenerated and saved to database." if delete else "Article summary saved to database."
