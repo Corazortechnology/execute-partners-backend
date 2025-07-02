@@ -240,9 +240,10 @@ def summarize_article():
                     summary_meta = ""
                     overview = ""
                 mycol.update_one(
-                        {"_id": ObjectId(article_id)},
-                        {"$unset": {"summary": "", "overview": ""}}
-                    )
+                                    {"_id": ObjectId(article_id)},
+                                    {"$set": {"summary": summary_meta, 
+                                              "overview": overview}},
+                                )
                 response_data["article_summary"] = summary_meta
                 response_data['article_overview'] = overview
                 response_data["message"] = "Article summary regenerated and saved to database." if delete else "Article summary saved to database."
